@@ -23,10 +23,13 @@ export async function GET(request: Request) {
       return NextResponse.json(allUsers.map(deserializeUser));
     }
 
-    // Get IDs of users already swiped on
+    // Get IDs of users already swiped on.
+    // The element type is annotated explicitly: the type Prisma infers through
+    // `include` doesn't always survive Next's build-time typecheck, which then
+    // reports `s` as an implicit any.
     const swipedUserIds = currentUser.swipes
-      .filter((s) => s.targetUserId)
-      .map((s) => s.targetUserId as string);
+      .map((s: { targetUserId: string | null }) => s.targetUserId)
+      .filter((id): id is string => Boolean(id));
 
     // Fetch users not in the swiped list and not the current user
     const swipableUsers = await prisma.user.findMany({
