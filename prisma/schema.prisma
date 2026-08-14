@@ -4,8 +4,13 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Local dev runs on SQLite so the app works with zero infrastructure.
+// To move to Supabase: switch provider back to "postgresql", set DATABASE_URL,
+// and convert the JSON-string list fields below back to String[].
+// Prisma 7: the connection URL lives in prisma.config.ts, and the client gets
+// a driver adapter (see lib/prisma.ts).
 datasource db {
-  provider  = "postgresql"
+  provider = "sqlite"
 }
 
 model Account {
@@ -14,12 +19,12 @@ model Account {
   type               String
   provider           String
   providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
+  refresh_token      String?
+  access_token       String?
   expires_at         Int?
   token_type         String?
   scope              String?
-  id_token           String?  @db.Text
+  id_token           String?
   session_state      String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -47,8 +52,10 @@ model User {
   // Custom MVP fields for GitRekt
   university    String?
   course        String?
-  skills        String[]  @default([])
-  interests     String[]  @default([])
+  // JSON-encoded string arrays: SQLite has no native list type.
+  // Use parseList()/serializeList() from lib/json-list.ts at the API boundary.
+  skills        String    @default("[]")
+  interests     String    @default("[]")
   swipes        Swipe[]   @relation("ActorSwipes")
   receivedSwipes Swipe[]  @relation("TargetSwipes")
   teams         TeamMember[]
@@ -67,7 +74,7 @@ model Team {
   id          String   @id @default(cuid())
   name        String
   description String?
-  skillsNeeded String[] @default([])
+  skillsNeeded String   @default("[]") // JSON-encoded string array
   members     TeamMember[]
   swipes      Swipe[]  @relation("TeamSwipes")
   createdAt   DateTime @default(now())
@@ -110,6 +117,24 @@ model Event {
   location    String?
   url         String?
   createdAt   DateTime @default(now())
+}
+
+/// Uploaded resume + the skill tags extracted from it.
+/// Keyed by email rather than a User FK so uploads work before auth is wired up.
+model Resume {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  fileKey     String
+  fileName    String
+  fileSize    Int      @default(0)
+  contentType String   @default("application/pdf")
+  pageCount   Int?
+  /// JSON: [{ "label": "React", "category": "framework", "confidence": 0.9 }]
+  tags        String   @default("[]")
+  /// "gemini" or "heuristic" — which extractor produced the tags.
+  tagSource   String   @default("heuristic")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model ChatMessage {
