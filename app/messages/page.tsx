@@ -1,7 +1,8 @@
 'use client';
 
 import AppLayout from '../../components/AppLayout';
-import { useState, useRef, useEffect, Suspense } from 'react';
+import { useState, useRef, useEffect, useSyncExternalStore, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
@@ -60,6 +61,24 @@ function MessagesContent() {
   const [newGroupDesc, setNewGroupDesc] = useState('');
   const [currentUser, setCurrentUser] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // The modal renders through a portal into document.body, which doesn't exist
+  // during SSR. false on the server, true after hydration, with no extra render.
+  const isPortalReady = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+
+  // Close the group modal on Escape.
+  useEffect(() => {
+    if (!isCreateGroupOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsCreateGroupOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isCreateGroupOpen]);
 
   // Fetch current user from localStorage
   useEffect(() => {
@@ -499,66 +518,92 @@ function MessagesContent() {
         </main>
       </div>
 
-      <AnimatePresence>
-        {isCreateGroupOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
+      {/*
+        Rendered through a portal: AppLayout wraps page content in
+        <main className="... relative z-10">, which creates a stacking context.
+        Anything inside it paints below the z-40 sidebar and z-50 bottom nav no
+        matter how high its own z-index is, which clipped this modal.
+      */}
+      {isPortalReady && createPortal(
+        <AnimatePresence>
+          {isCreateGroupOpen && (
+            <motion.div
+              key="create-group-modal"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsCreateGroupOpen(false)}
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-            />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-[#0f0f12] border border-white/10 rounded-[32px] p-8 shadow-2xl overflow-hidden"
+              className="fixed inset-0 z-[90] overflow-y-auto overscroll-contain bg-black/80 backdrop-blur-sm"
             >
-              <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary/10 rounded-full blur-[80px]"></div>
-              
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-2xl font-bold text-white">Create New Group</h3>
-                  <button onClick={() => setIsCreateGroupOpen(false)} className="text-slate-500 hover:text-white transition-colors">
-                    <span className="material-symbols-outlined">close</span>
-                  </button>
-                </div>
+              {/* min-h-full centres the card when it fits and lets the overlay
+                  scroll instead of clipping when the viewport is short */}
+              <div className="flex min-h-full items-center justify-center p-4 sm:p-6">
+                <motion.div
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="create-group-title"
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                  onClick={(e) => e.stopPropagation()}
+                  /* max-w-[28rem] not max-w-md: globals.css defines --spacing-md,
+                     which Tailwind v4 resolves for max-w-md, capping it at 24px */
+                  className="relative w-full max-w-[28rem] bg-[#0f0f12] border border-white/10 rounded-[32px] p-6 sm:p-8 shadow-2xl overflow-hidden"
+                >
+                  <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary/10 rounded-full blur-[80px]"></div>
 
-                <form onSubmit={handleCreateGroup} className="space-y-6">
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Group Name</label>
-                    <input 
-                      type="text" 
-                      value={newGroupName}
-                      onChange={(e) => setNewGroupName(e.target.value)}
-                      placeholder="e.g. Team Bayanihan"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary/50 outline-none transition-all"
-                      autoFocus
-                    />
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-between mb-6 sm:mb-8">
+                      <h3 id="create-group-title" className="text-2xl font-bold text-white">Create New Group</h3>
+                      <button
+                        type="button"
+                        aria-label="Close create group dialog"
+                        onClick={() => setIsCreateGroupOpen(false)}
+                        className="text-slate-500 hover:text-white transition-colors"
+                      >
+                        <span className="material-symbols-outlined">close</span>
+                      </button>
+                    </div>
+
+                    <form onSubmit={handleCreateGroup} className="space-y-5 sm:space-y-6">
+                      <div>
+                        <label htmlFor="new-group-name" className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Group Name</label>
+                        <input
+                          id="new-group-name"
+                          type="text"
+                          value={newGroupName}
+                          onChange={(e) => setNewGroupName(e.target.value)}
+                          placeholder="e.g. Team Bayanihan"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary/50 outline-none transition-all"
+                          autoFocus
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="new-group-desc" className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Description</label>
+                        <textarea
+                          id="new-group-desc"
+                          value={newGroupDesc}
+                          onChange={(e) => setNewGroupDesc(e.target.value)}
+                          placeholder="What is this group for?"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary/50 outline-none transition-all min-h-[88px] sm:min-h-[100px]"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className="w-full py-4 rounded-xl bg-primary text-on-primary font-bold hover:brightness-110 shadow-lg transition-all flex items-center justify-center gap-2"
+                      >
+                        <span className="material-symbols-outlined">groups</span>
+                        Create Group
+                      </button>
+                    </form>
                   </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Description</label>
-                    <textarea 
-                      value={newGroupDesc}
-                      onChange={(e) => setNewGroupDesc(e.target.value)}
-                      placeholder="What is this group for?"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary/50 outline-none transition-all min-h-[100px]"
-                    />
-                  </div>
-                  <button 
-                    type="submit"
-                    className="w-full py-4 rounded-xl bg-primary text-on-primary font-bold hover:brightness-110 shadow-lg transition-all flex items-center justify-center gap-2"
-                  >
-                    <span className="material-symbols-outlined">groups</span>
-                    Create Group
-                  </button>
-                </form>
+                </motion.div>
               </div>
             </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </AppLayout>
   );
 }
