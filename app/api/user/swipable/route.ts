@@ -23,10 +23,19 @@ export async function GET(request: Request) {
       return NextResponse.json(allUsers.map(deserializeUser));
     }
 
-    // Get IDs of users already swiped on
-    const swipedUserIds = currentUser.swipes
-      .filter((s) => s.targetUserId)
-      .map((s) => s.targetUserId as string);
+    // Get IDs of users already swiped on.
+    //
+    // Written as an explicit loop rather than .filter().map(): the type Prisma
+    // infers through `include` doesn't survive Next's build-time typecheck, so
+    // `currentUser.swipes` lands as `any` and every callback parameter in a
+    // chain becomes an implicit any. A typed local plus a loop has no
+    // parameters left to infer.
+    const previousSwipes: Array<{ targetUserId: string | null }> = currentUser.swipes ?? [];
+    const swipedUserIds: string[] = [];
+
+    for (const swipe of previousSwipes) {
+      if (swipe.targetUserId) swipedUserIds.push(swipe.targetUserId);
+    }
 
     // Fetch users not in the swiped list and not the current user
     const swipableUsers = await prisma.user.findMany({

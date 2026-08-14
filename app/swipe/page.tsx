@@ -5,7 +5,20 @@ import AppLayout from '../../components/AppLayout';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const MOCK_PROFILES = [
+type Profile = {
+  id: number | string;
+  name: string;
+  age: number;
+  role: string;
+  school: string;
+  image: string;
+  skills: string[];
+  bio: string;
+  /** True for users loaded from the database — only those hit the swipe API. */
+  isReal?: boolean;
+};
+
+const MOCK_PROFILES: Profile[] = [
   {
     id: 1,
     name: 'Angelo Reyes',
@@ -375,9 +388,10 @@ export default function SwipePage() {
           headers: { 'Content-Type': 'application/json' }
         });
         const data = await res.json();
-        
+
         if (data.isMatch) {
-          handleMatch();
+          // The API created the chatroom — carry its id to the match screen.
+          handleMatch(data.chatId);
           return;
         }
       } catch (err) {
@@ -391,9 +405,14 @@ export default function SwipePage() {
     }, 400);
   };
 
-  const handleMatch = () => {
-    const skillsParam = encodeURIComponent(currentProfile.skills.join(','));
-    router.push(`/match?name=${encodeURIComponent(currentProfile.name)}&image=${encodeURIComponent(currentProfile.image)}&skills=${skillsParam}`);
+  const handleMatch = (chatId?: string | null) => {
+    const params = new URLSearchParams({
+      name: currentProfile.name,
+      image: currentProfile.image,
+      skills: currentProfile.skills.join(','),
+    });
+    if (chatId) params.set('chatId', chatId);
+    router.push(`/match?${params.toString()}`);
   };
 
   useEffect(() => {

@@ -73,6 +73,8 @@ model User {
   receivedSwipes Swipe[]  @relation("TargetSwipes")
   teams         TeamMember[]
   sentMessages  ChatMessage[] @relation("SentMessages")
+  conversationsA Conversation[] @relation("ConversationUserA")
+  conversationsB Conversation[] @relation("ConversationUserB")
 }
 
 model VerificationToken {
@@ -148,6 +150,23 @@ model Resume {
   tagSource   String   @default("heuristic")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+/// A 1-on-1 chatroom, created automatically when two users match.
+/// `chatId` is derived deterministically from the two user IDs (see
+/// lib/conversation.ts) and is what ChatMessage rows are keyed on.
+model Conversation {
+  id        String   @id @default(cuid())
+  chatId    String   @unique
+  userAId   String
+  userBId   String
+  createdAt DateTime @default(now())
+
+  userA User @relation("ConversationUserA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB User @relation("ConversationUserB", fields: [userBId], references: [id], onDelete: Cascade)
+
+  /// User IDs are stored in sorted order, so one pair can only ever have one row.
+  @@unique([userAId, userBId])
 }
 
 model ChatMessage {

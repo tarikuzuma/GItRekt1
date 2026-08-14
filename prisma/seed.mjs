@@ -325,6 +325,72 @@ async function main() {
     console.log(`  ${t.name.padEnd(22)} ${t.memberEmails.length + 1} members`);
   }
 
+  // ─── Inbound likes ───────────────────────────────────────────────────────
+  //
+  // A match needs BOTH sides to swipe right. Nobody has ever swiped on you, so
+  // without this a right swipe can never produce a match or a chatroom.
+  //
+  // Every real (non-seeded) account in the database gets liked by all 10 seeded
+  // users automatically — no email argument needed. Pass one only to pre-create
+  // an account that hasn't signed up yet:
+  //
+  //   npm run seed                      # likes for everyone already in the DB
+  //   npm run seed -- new@example.com   # also creates that account first
+  console.log('\nSeeding inbound likes…');
+
+  const seededEmails = new Set(USERS.map((u) => u.email.toLowerCase()));
+
+  for (const arg of process.argv.slice(2)) {
+    const email = arg.trim().toLowerCase();
+    if (!email || !email.includes('@')) continue;
+    await prisma.user.upsert({
+      where: { email },
+      update: {},
+      create: { email, name: 'Demo User' },
+    });
+  }
+
+  const allUsers = await prisma.user.findMany({ select: { id: true, email: true, name: true } });
+  const realUsers = allUsers.filter((u) => u.email && !seededEmails.has(u.email.toLowerCase()));
+
+  if (realUsers.length === 0) {
+    console.log('  No real accounts found yet — sign up (or save your profile) and');
+    console.log('  re-run `npm run seed` to get inbound likes.');
+  } else {
+    for (const target of realUsers) {
+      let created = 0;
+
+      for (const seeded of byEmail.values()) {
+        if (seeded.id === target.id) continue;
+
+        // The unique index includes a nullable column and SQLite treats NULLs
+        // as distinct, so check first rather than relying on upsert to dedupe.
+        const existing = await prisma.swipe.findFirst({
+          where: { actorId: seeded.id, targetUserId: target.id },
+        });
+
+        if (existing) {
+          await prisma.swipe.update({ where: { id: existing.id }, data: { direction: 'LIKE' } });
+        } else {
+          await prisma.swipe.create({
+            data: {
+              actorId: seeded.id,
+              targetUserId: target.id,
+              targetType: 'USER',
+              direction: 'LIKE',
+            },
+          });
+          created++;
+        }
+      }
+
+      const label = target.name || target.email;
+      console.log(`  ${String(label).padEnd(24)} +${created} new (10 users now like them)`);
+    }
+
+    console.log('\n  Right-swipe anyone to trigger a match + chatroom.');
+  }
+
   const totals = {
     users: await prisma.user.count(),
     teams: await prisma.team.count(),

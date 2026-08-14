@@ -48,6 +48,7 @@ const INITIAL_CHATS: Chat[] = [
 function MessagesContent() {
   const searchParams = useSearchParams();
   const targetUser = searchParams.get('user');
+  const requestedChatId = searchParams.get('chatId');
   
   const [chats, setChats] = useState<Chat[]>(INITIAL_CHATS);
   const [allUsers, setAllUsers] = useState<any[]>([]);
@@ -80,6 +81,38 @@ function MessagesContent() {
       })
       .catch(err => console.error('Failed to load global users:', err));
   }, []);
+
+  // Load chatrooms created by mutual matches, and open the one the "It's a
+  // Match!" screen linked to (?chatId=).
+  useEffect(() => {
+    if (!currentUser?.email) return;
+
+    fetch(`/api/conversations?email=${encodeURIComponent(currentUser.email)}`)
+      .then(res => res.json())
+      .then(convos => {
+        if (!Array.isArray(convos)) return;
+
+        setChats(prev => {
+          const existing = new Set(prev.map(c => c.id));
+          const added: Chat[] = convos
+            .filter((c: any) => !existing.has(c.chatId))
+            .map((c: any) => ({
+              id: c.chatId,
+              name: c.otherUser?.name || 'Matched Hacker',
+              type: 'dm' as const,
+              avatar: c.otherUser?.image || '',
+              description: c.otherUser?.role || undefined,
+              status: 'online' as const,
+              messages: []
+            }));
+
+          return added.length > 0 ? [...added, ...prev] : prev;
+        });
+
+        if (requestedChatId) setActiveChatId(requestedChatId);
+      })
+      .catch(err => console.error('Failed to load conversations:', err));
+  }, [currentUser, requestedChatId]);
 
   const handleStartChat = (user: any) => {
     const chatId = `dm-${user.name.toLowerCase().replace(/\s+/g, '-')}`;

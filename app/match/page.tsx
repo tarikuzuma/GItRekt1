@@ -10,6 +10,12 @@ function MatchContent() {
   const image = searchParams.get('image') || 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=300';
   const skillsString = searchParams.get('skills') || 'TypeScript,Next.js,Taglish NLP';
   const skills = skillsString.split(',');
+  // Set by the swipe API when it created the chatroom for this match.
+  const chatId = searchParams.get('chatId');
+
+  const chatHref = chatId
+    ? `/messages?chatId=${encodeURIComponent(chatId)}`
+    : `/messages?user=${encodeURIComponent(name)}`;
 
   return (
     <div className="bg-[#000000] text-on-surface antialiased min-h-screen flex items-center justify-center overflow-hidden relative font-body-md">
@@ -79,7 +85,7 @@ function MatchContent() {
           
           {/* Action Buttons */}
           <div className="relative z-10 flex flex-col w-full gap-3">
-            <Link href={`/messages?user=${encodeURIComponent(name)}`} className="w-full py-4 rounded-2xl bg-[#8b5cf6] text-white font-bold text-[15px] shadow-[0_0_25px_rgba(139,92,246,0.4)] hover:brightness-110 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
+            <Link href={chatHref} className="w-full py-4 rounded-2xl bg-[#8b5cf6] text-white font-bold text-[15px] shadow-[0_0_25px_rgba(139,92,246,0.4)] hover:brightness-110 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
               <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>chat_bubble</span>
               Start Chat with {name}
             </Link>

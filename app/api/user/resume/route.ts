@@ -24,7 +24,10 @@ function errorResponse(error: unknown, fallback: string) {
     return NextResponse.json({ error: error.message }, { status: error.status });
   }
   console.error(fallback, error);
-  return NextResponse.json({ error: fallback }, { status: 500 });
+  // Surface the underlying reason: a bare "Failed to process resume." gives you
+  // nothing to go on when this happens in a deployment you can't attach to.
+  const detail = error instanceof Error ? error.message : String(error);
+  return NextResponse.json({ error: `${fallback} (${detail})` }, { status: 500 });
 }
 
 /**
@@ -56,13 +59,29 @@ export async function POST(request: Request) {
 
     const contentType = file.type || 'application/pdf';
     const key = buildResumeKey(email, file.name);
-    const stored = await putResume(key, bytes, contentType);
+
+    // Storing the file is best-effort. The tags are the point of this feature,
+    // and serverless hosts have a read-only filesystem — so if the write fails
+    // we still return the tags rather than losing the whole upload.
+    let storedKey = '';
+    let storageWarning: string | undefined;
+
+    try {
+      const stored = await putResume(key, bytes, contentType);
+      storedKey = stored.key;
+    } catch (error) {
+      if (error instanceof StorageError) {
+        storageWarning = `Tags extracted, but the file itself was not saved. ${error.message}`;
+      } else {
+        throw error;
+      }
+    }
 
     const record = {
       email: email.toLowerCase(),
-      fileKey: stored.key,
+      fileKey: storedKey,
       fileName: file.name,
-      fileSize: stored.size,
+      fileSize: bytes.byteLength,
       contentType,
       pageCount: extraction.pageCount,
       tags: tagging.tags,
@@ -72,18 +91,29 @@ export async function POST(request: Request) {
     // Best-effort: returns null when Supabase isn't wired up yet.
     const persisted = await saveResumeRecord(record);
 
+    // No URL when the file wasn't stored — the UI hides the "View" button.
+    let url: string | null = null;
+    if (storedKey) {
+      try {
+        url = await getResumeUrl(storedKey);
+      } catch (error) {
+        console.error('Could not build resume URL:', error);
+      }
+    }
+
     return NextResponse.json({
       resume: {
         ...record,
         updatedAt: persisted?.updatedAt ?? new Date().toISOString(),
-        url: await getResumeUrl(stored.key),
+        url,
       },
       tagSource: tagging.source,
       model: tagging.model,
-      warning: tagging.warning,
+      // Storage problems matter more to the user than the tag-source note.
+      warning: storageWarning ?? tagging.warning,
       truncated: extraction.truncated,
       persisted: persisted !== null,
-      storageDriver: stored.driver,
+      storageDriver: getStorageDriver(),
     });
   } catch (error) {
     return errorResponse(error, 'Failed to process resume.');

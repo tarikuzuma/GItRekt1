@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { ensureConversation } from "@/lib/conversation";
 import { supabase } from "@/lib/supabase";
 import { NextResponse } from 'next/server';
 
@@ -39,6 +40,9 @@ export async function POST(request: Request) {
 
     // 2. Check for match if direction is LIKE
     let isMatch = false;
+    let chatId: string | null = null;
+    let matchedUser = null;
+
     if (direction === 'LIKE' && targetType === 'USER') {
       const reciprocalSwipe = await prisma.swipe.findFirst({
         where: {
@@ -50,20 +54,29 @@ export async function POST(request: Request) {
 
       if (reciprocalSwipe) {
         isMatch = true;
-        
-        // Notify via Supabase Realtime
+
+        // Create (or reuse) the chatroom for this pair.
+        chatId = await ensureConversation(actor.id, targetUserId);
+
+        matchedUser = await prisma.user.findUnique({
+          where: { id: targetUserId },
+          select: { id: true, name: true, image: true, role: true, university: true }
+        });
+
+        // Notify via Supabase Realtime (no-op until Supabase creds are set)
         await supabase.channel('matches').send({
           type: 'broadcast',
           event: 'new-match',
           payload: {
             users: [actor.id, targetUserId],
-            names: [actor.name, 'Someone'], // We can fetch the target name too
+            names: [actor.name, matchedUser?.name ?? 'Someone'],
+            chatId,
           }
         });
       }
     }
 
-    return NextResponse.json({ success: true, isMatch });
+    return NextResponse.json({ success: true, isMatch, chatId, matchedUser });
   } catch (error) {
     console.error('Swipe error:', error);
     return NextResponse.json({ error: 'Failed to process swipe' }, { status: 500 });

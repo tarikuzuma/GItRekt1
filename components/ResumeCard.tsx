@@ -237,7 +237,13 @@ export default function ResumeCard({ email, currentSkills, onAddSkills }: Resume
           >
             <span className="material-symbols-outlined text-primary text-[32px]">upload_file</span>
             <p className="text-[14px] text-on-surface font-bold">Upload your resume</p>
-            <p className="text-[12px] text-on-surface-variant text-center max-w-sm">
+            {/* Width set inline: this project's Tailwind theme overrides the
+                default max-width scale, so `max-w-sm` collapsed the paragraph
+                to roughly one word per line. */}
+            <p
+              className="text-[12px] text-on-surface-variant text-center w-full"
+              style={{ maxWidth: '24rem' }}
+            >
               We&apos;ll read it with Google AI and turn it into skill tags for matching.
             </p>
             <p className="text-[11px] text-slate-500 uppercase tracking-widest font-bold mt-1">
