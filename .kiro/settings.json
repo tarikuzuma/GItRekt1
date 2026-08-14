@@ -1,0 +1,8 @@
+{
+  "project": {
+    "name": "HackMatch",
+    "description": "Premium teammate discovery platform for Philippine hackathon students",
+    "framework": "Next.js 14",
+    "language": "TypeScript"
+  }
+}
