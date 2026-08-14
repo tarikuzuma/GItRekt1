@@ -140,8 +140,21 @@ export async function putResume(
     const fs = await import('node:fs/promises');
     const path = await import('node:path');
     const target = await localPathFor(key);
-    await fs.mkdir(path.dirname(target), { recursive: true });
-    await fs.writeFile(target, bytes);
+    try {
+      await fs.mkdir(path.dirname(target), { recursive: true });
+      await fs.writeFile(target, bytes);
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException)?.code;
+      // Serverless hosts (Vercel, Lambda) have a read-only filesystem.
+      if (code === 'EROFS' || code === 'EACCES' || code === 'EPERM') {
+        throw new StorageError(
+          'This deployment has a read-only filesystem, so the resume file could not be saved. ' +
+            'Configure Supabase Storage (NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY) to store files.',
+          503
+        );
+      }
+      throw error;
+    }
   }
 
   return { key, driver, size: bytes.byteLength, contentType };
