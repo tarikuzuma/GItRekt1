@@ -31,20 +31,50 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { email, name, image, university, course, skills, interests } = data;
+    const {
+      email,
+      name,
+      image,
+      university,
+      course,
+      skills,
+      interests,
+      role,
+      bio,
+      location,
+      github,
+      vibe,
+      idealTeam,
+      stats,
+    } = data;
 
     if (!email) {
       return NextResponse.json({ error: 'Email required' }, { status: 400 });
     }
 
+    // The profile page nests the counters under `stats`; the DB stores them flat.
+    const toInt = (v: unknown) => {
+      const n = Number(v);
+      return Number.isFinite(n) ? Math.trunc(n) : 0;
+    };
+
     const fields = {
       name,
       image,
-      university,
+      university: university ?? data.school,
       course,
+      role,
+      bio,
+      location,
+      github,
+      vibe,
+      hackathons: toInt(stats?.hackathons),
+      wins: toInt(stats?.wins),
+      totalPrizes: String(stats?.prizes ?? '0'),
       // SQLite stores these as JSON strings — see lib/json-list.ts
       skills: serializeList(skills),
       interests: serializeList(interests),
+      idealTeam: JSON.stringify(Array.isArray(idealTeam) ? idealTeam : []),
     };
 
     const user = await prisma.user.upsert({
