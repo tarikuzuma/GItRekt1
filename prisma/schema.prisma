@@ -52,10 +52,23 @@ model User {
   // Custom MVP fields for GitRekt
   university    String?
   course        String?
+  role          String?
+  bio           String?
+  location      String?
+  github        String?
+  vibe          String?
+
+  // Hackathon stats shown on the profile header
+  hackathons    Int       @default(0)
+  wins          Int       @default(0)
+  totalPrizes   String    @default("0")
+
   // JSON-encoded string arrays: SQLite has no native list type.
   // Use parseList()/serializeList() from lib/json-list.ts at the API boundary.
   skills        String    @default("[]")
   interests     String    @default("[]")
+  /// JSON: [{ "role": "Designer", "desc": "Someone who can prototype fast" }]
+  idealTeam     String    @default("[]")
   swipes        Swipe[]   @relation("ActorSwipes")
   receivedSwipes Swipe[]  @relation("TargetSwipes")
   teams         TeamMember[]

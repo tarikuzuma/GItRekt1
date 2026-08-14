@@ -41,6 +41,18 @@ export function serializeList(value: unknown): string {
   return '[]';
 }
 
+/** Parse a JSON column holding an array of objects (e.g. idealTeam). */
+export function parseObjectList<T>(value: unknown): T[] {
+  if (Array.isArray(value)) return value as T[];
+  if (typeof value !== 'string' || !value.trim()) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? (parsed as T[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 /** Expand a user row's JSON list columns into arrays for the client. */
 export function deserializeUser<T extends Record<string, unknown>>(user: T | null) {
   if (!user) return user;
@@ -48,5 +60,12 @@ export function deserializeUser<T extends Record<string, unknown>>(user: T | nul
     ...user,
     skills: parseList(user.skills),
     interests: parseList(user.interests),
+    idealTeam: parseObjectList<{ role: string; desc: string }>(user.idealTeam),
+    // The DB stores these flat; the profile page reads them nested under `stats`.
+    stats: {
+      hackathons: Number(user.hackathons ?? 0),
+      wins: Number(user.wins ?? 0),
+      prizes: String(user.totalPrizes ?? '0'),
+    },
   };
 }
