@@ -24,12 +24,18 @@ export async function GET(request: Request) {
     }
 
     // Get IDs of users already swiped on.
-    // The element type is annotated explicitly: the type Prisma infers through
-    // `include` doesn't always survive Next's build-time typecheck, which then
-    // reports `s` as an implicit any.
-    const swipedUserIds = currentUser.swipes
-      .map((s: { targetUserId: string | null }) => s.targetUserId)
-      .filter((id): id is string => Boolean(id));
+    //
+    // Written as an explicit loop rather than .filter().map(): the type Prisma
+    // infers through `include` doesn't survive Next's build-time typecheck, so
+    // `currentUser.swipes` lands as `any` and every callback parameter in a
+    // chain becomes an implicit any. A typed local plus a loop has no
+    // parameters left to infer.
+    const previousSwipes: Array<{ targetUserId: string | null }> = currentUser.swipes ?? [];
+    const swipedUserIds: string[] = [];
+
+    for (const swipe of previousSwipes) {
+      if (swipe.targetUserId) swipedUserIds.push(swipe.targetUserId);
+    }
 
     // Fetch users not in the swiped list and not the current user
     const swipableUsers = await prisma.user.findMany({

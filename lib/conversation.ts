@@ -21,16 +21,31 @@ export function parseChatId(chatId: string): [string, string] | null {
   return parts.length === 2 && parts[0] && parts[1] ? [parts[0], parts[1]] : null;
 }
 
+export interface ConversationParticipant {
+  id: string;
+  name: string | null;
+  image: string | null;
+  role: string | null;
+  university: string | null;
+}
+
 export interface ConversationSummary {
   chatId: string;
   createdAt: string;
-  otherUser: {
-    id: string;
-    name: string | null;
-    image: string | null;
-    role: string | null;
-    university: string | null;
-  };
+  otherUser: ConversationParticipant;
+}
+
+/**
+ * Shape of the row we select below. Declared explicitly because the type Prisma
+ * infers doesn't survive Next's build-time typecheck, which would leave the
+ * `.map()` callback parameter as an implicit any.
+ */
+interface ConversationRow {
+  chatId: string;
+  createdAt: Date;
+  userAId: string;
+  userA: ConversationParticipant;
+  userB: ConversationParticipant;
 }
 
 /**
@@ -64,7 +79,7 @@ export async function listConversations(email: string): Promise<ConversationSumm
   });
   if (!user) return [];
 
-  const rows = await prisma.conversation.findMany({
+  const rows: ConversationRow[] = await prisma.conversation.findMany({
     where: { OR: [{ userAId: user.id }, { userBId: user.id }] },
     orderBy: { createdAt: 'desc' },
     include: {
@@ -73,9 +88,15 @@ export async function listConversations(email: string): Promise<ConversationSumm
     },
   });
 
-  return rows.map((row) => ({
-    chatId: row.chatId,
-    createdAt: row.createdAt.toISOString(),
-    otherUser: row.userAId === user.id ? row.userB : row.userA,
-  }));
+  const summaries: ConversationSummary[] = [];
+
+  for (const row of rows) {
+    summaries.push({
+      chatId: row.chatId,
+      createdAt: row.createdAt.toISOString(),
+      otherUser: row.userAId === user.id ? row.userB : row.userA,
+    });
+  }
+
+  return summaries;
 }
