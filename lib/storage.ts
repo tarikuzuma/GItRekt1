@@ -51,6 +51,25 @@ export function getStorageDriver(): StorageDriver {
   return supabaseUrl() && supabaseKey() ? 'supabase' : 'local';
 }
 
+/**
+ * True on serverless hosts, where the bundle directory is read-only and any
+ * writes outside /tmp fail — with EROFS, EACCES, or (on Lambda) ENOENT,
+ * depending on how deep the path is. Checking the environment is deterministic;
+ * sniffing error codes is not.
+ */
+function isServerless(): boolean {
+  return Boolean(
+    process.env.VERCEL ||
+      process.env.AWS_LAMBDA_FUNCTION_NAME ||
+      process.env.NETLIFY ||
+      process.env.LAMBDA_TASK_ROOT
+  );
+}
+
+const NO_LOCAL_STORAGE_MESSAGE =
+  'This deployment has no writable filesystem, so the resume file could not be saved. ' +
+  'Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to store files in Supabase Storage.';
+
 /** Non-cryptographic hash (FNV-1a). Only used to namespace paths per user. */
 function hashEmail(email: string): string {
   let hash = 0x811c9dc5;
@@ -137,6 +156,12 @@ export async function putResume(
       throw new StorageError(`Upload failed: ${error.message}${hint}`);
     }
   } else {
+    // Don't even attempt the write on a serverless host — it cannot succeed,
+    // and the failure mode varies by platform.
+    if (isServerless()) {
+      throw new StorageError(NO_LOCAL_STORAGE_MESSAGE, 503);
+    }
+
     const fs = await import('node:fs/promises');
     const path = await import('node:path');
     const target = await localPathFor(key);
@@ -144,14 +169,10 @@ export async function putResume(
       await fs.mkdir(path.dirname(target), { recursive: true });
       await fs.writeFile(target, bytes);
     } catch (error) {
+      // Belt and braces for any host the check above doesn't recognise.
       const code = (error as NodeJS.ErrnoException)?.code;
-      // Serverless hosts (Vercel, Lambda) have a read-only filesystem.
-      if (code === 'EROFS' || code === 'EACCES' || code === 'EPERM') {
-        throw new StorageError(
-          'This deployment has a read-only filesystem, so the resume file could not be saved. ' +
-            'Configure Supabase Storage (NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY) to store files.',
-          503
-        );
+      if (code === 'EROFS' || code === 'EACCES' || code === 'EPERM' || code === 'ENOENT') {
+        throw new StorageError(NO_LOCAL_STORAGE_MESSAGE, 503);
       }
       throw error;
     }
