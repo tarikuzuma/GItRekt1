@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HackMatch - Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#262354",
+                        "on-secondary": "#3f2160",
+                        "secondary-fixed-dim": "#dbb8ff",
+                        "surface-variant": "#37333d",
+                        "on-surface-variant": "#cbc3d7",
+                        "surface-bright": "#3b3742",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "outline": "#958ea0",
+                        "surface-container-high": "#2c2832",
+                        "on-primary-fixed-variant": "#5516be",
+                        "on-background": "#e7e0ed",
+                        "on-primary-fixed": "#23005c",
+                        "surface-container": "#211e27",
+                        "secondary": "#dbb8ff",
+                        "tertiary-fixed-dim": "#c4c1fb",
+                        "surface-container-lowest": "#0f0d15",
+                        "primary-fixed-dim": "#d0bcff",
+                        "on-primary-container": "#340080",
+                        "on-tertiary-fixed-variant": "#444173",
+                        "inverse-surface": "#e7e0ed",
+                        "surface": "#15121b",
+                        "inverse-primary": "#6d3bd7",
+                        "surface-tint": "#d0bcff",
+                        "tertiary-fixed": "#e3dfff",
+                        "surface-container-low": "#1d1a23",
+                        "tertiary": "#c4c1fb",
+                        "primary-container": "#a078ff",
+                        "on-surface": "#e7e0ed",
+                        "primary-fixed": "#e9ddff",
+                        "primary": "#d0bcff",
+                        "secondary-container": "#573878",
+                        "on-secondary-container": "#caa6ef",
+                        "tertiary-container": "#8e8bc2",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed": "#181445",
+                        "on-primary": "#3c0091",
+                        "surface-container-highest": "#37333d",
+                        "background": "#15121b",
+                        "outline-variant": "#494454",
+                        "surface-dim": "#15121b",
+                        "inverse-on-surface": "#322f39",
+                        "on-secondary-fixed": "#29074a",
+                        "on-secondary-fixed-variant": "#573878",
+                        "on-tertiary": "#2d2a5b",
+                        "secondary-fixed": "#efdbff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin": "32px",
+                        "base": "4px",
+                        "sm": "16px",
+                        "xs": "8px",
+                        "gutter": "24px",
+                        "lg": "40px",
+                        "container-max": "1280px",
+                        "md": "24px",
+                        "xl": "64px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Space Grotesk"],
+                        "mono": ["Space Grotesk"],
+                        "body-md": ["Inter"],
+                        "h3": ["Space Grotesk"],
+                        "body-lg": ["Inter"],
+                        "h1": ["Space Grotesk"],
+                        "label-caps": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h2": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "mono": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "h3": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "h1": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+            color: #e7e0ed;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .ambient-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #a078ff 0%, #6d3bd7 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+        }
+        .btn-ghost {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .skill-chip {
+            background-color: #262354;
+            color: #d0bcff;
+            transition: all 0.2s ease;
+        }
+        .skill-chip:hover, .skill-chip.active {
+            background-color: #340080;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+        }
+        /* Hide nav shell for onboarding flow as per rules */
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center relative overflow-hidden font-body-md text-body-md">
+<!-- Ambient Illumination -->
+<div class="ambient-glow top-0 left-0 -translate-x-1/2 -translate-y-1/2"></div>
+<div class="ambient-glow bottom-0 right-0 translate-x-1/2 translate-y-1/2"></div>
+<!-- Onboarding Container -->
+<main class="w-full max-w-2xl px-margin md:px-0 relative z-10 flex flex-col items-center">
+<!-- Brand Header -->
+<div class="mb-lg text-center">
+<h1 class="font-h1 text-h1 text-primary tracking-tighter mb-xs">HackMatch</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Engineering Elite</p>
+</div>
+<!-- Glassmorphic Card -->
+<div class="glass-panel w-full rounded-xl p-md md:p-lg shadow-[0_0_40px_rgba(0,0,0,0.8)] relative">
+<!-- Progress Indicator -->
+<div class="w-full flex items-center justify-between mb-lg relative"><div class="absolute top-1/2 left-0 w-full h-[2px] bg-outline-variant/30 -z-10 -translate-y-1/2"></div>
+<div class="absolute top-1/2 left-0 w-1/3 h-[2px] bg-primary -z-10 -translate-y-1/2 shadow-[0_0_10px_rgba(208,188,255,0.5)]"></div>
+<div class="flex flex-col items-center gap-xs">
+<div class="w-8 h-8 rounded-full bg-primary/20 text-primary border border-primary/50 flex items-center justify-center font-bold text-sm">
+<span class="material-symbols-outlined text-sm">check</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Skills</span>
+</div>
+<div class="flex flex-col items-center gap-xs">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-sm shadow-[0_0_15px_rgba(208,188,255,0.4)]">2</div>
+<span class="font-label-caps text-label-caps text-primary">Interests</span>
+</div>
+<div class="flex flex-col items-center gap-xs">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant border border-outline-variant/50 flex items-center justify-center font-bold text-sm">3</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Role</span>
+</div>
+<div class="flex flex-col items-center gap-xs">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant border border-outline-variant/50 flex items-center justify-center font-bold text-sm">4</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Vibe</span>
+</div></div>
+<!-- Content Area: Step 1 -->
+<div class="flex flex-col gap-md">
+<div class="text-center">
+<h2 class="font-h2 text-h2 text-on-surface mb-xs">Hackathon Categories</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Select the types of projects and industries that interest you most.</p>
+</div>
+<!-- Skill Chips Container -->
+<div class="flex flex-wrap gap-sm justify-center py-sm"><button class="skill-chip active rounded-full px-4 py-2 font-label-caps text-label-caps border border-primary/30 flex items-center gap-xs">
+    AI/ML
+</button>
+<button class="skill-chip rounded-full px-4 py-2 font-label-caps text-label-caps border border-transparent flex items-center gap-xs">
+    Web3 &amp; Crypto
+</button>
+<button class="skill-chip active rounded-full px-4 py-2 font-label-caps text-label-caps border border-primary/30 flex items-center gap-xs">
+    FinTech
+</button>
+<button class="skill-chip rounded-full px-4 py-2 font-label-caps text-label-caps border border-transparent flex items-center gap-xs">
+    Social Good
+</button>
+<button class="skill-chip rounded-full px-4 py-2 font-label-caps text-label-caps border border-transparent flex items-center gap-xs">
+    Cybersecurity
+</button>
+<button class="skill-chip active rounded-full px-4 py-2 font-label-caps text-label-caps border border-primary/30 flex items-center gap-xs">
+    Gaming
+</button>
+<button class="skill-chip rounded-full px-4 py-2 font-label-caps text-label-caps border border-transparent flex items-center gap-xs">
+    HealthTech
+</button>
+<button class="skill-chip rounded-full px-4 py-2 font-label-caps text-label-caps border border-transparent flex items-center gap-xs">
+    EdTech
+</button></div>
+<!-- Toggle -->
+<div class="flex items-center justify-between p-sm rounded-lg bg-surface-container-lowest/50 border border-outline-variant/20 mt-sm">
+<div class="flex flex-col"><span class="font-body-md text-body-md text-on-surface font-semibold">First-time Hacker?</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Let us know if you're new to hackathons so we can match you with beginner-friendly teams.</span></div>
+<!-- Custom Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface after:border-outline-variant after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+<!-- Actions -->
+<div class="mt-lg flex items-center justify-between pt-md border-t border-outline-variant/20">
+<button class="btn-ghost font-label-caps text-label-caps text-on-surface-variant px-md py-sm rounded-lg flex items-center gap-xs">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+                    Back
+                </button>
+<button class="btn-primary font-label-caps text-label-caps text-on-primary px-lg py-sm rounded-lg flex items-center gap-xs shadow-[0_0_20px_rgba(139,92,246,0.2)]">
+                    Continue
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_forward</span>
+</button>
+</div>
+</div>
+</main>
+</body></html>

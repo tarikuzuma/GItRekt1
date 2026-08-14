@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HackMatch - Authentication</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary-container": "#262354",
+                        "on-secondary": "#3f2160",
+                        "secondary-fixed-dim": "#dbb8ff",
+                        "surface-variant": "#37333d",
+                        "on-surface-variant": "#cbc3d7",
+                        "surface-bright": "#3b3742",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "outline": "#958ea0",
+                        "surface-container-high": "#2c2832",
+                        "on-primary-fixed-variant": "#5516be",
+                        "on-background": "#e7e0ed",
+                        "on-primary-fixed": "#23005c",
+                        "surface-container": "#211e27",
+                        "secondary": "#dbb8ff",
+                        "tertiary-fixed-dim": "#c4c1fb",
+                        "surface-container-lowest": "#0f0d15",
+                        "primary-fixed-dim": "#d0bcff",
+                        "on-primary-container": "#340080",
+                        "on-tertiary-fixed-variant": "#444173",
+                        "inverse-surface": "#e7e0ed",
+                        "surface": "#15121b",
+                        "inverse-primary": "#6d3bd7",
+                        "surface-tint": "#d0bcff",
+                        "tertiary-fixed": "#e3dfff",
+                        "surface-container-low": "#1d1a23",
+                        "tertiary": "#c4c1fb",
+                        "primary-container": "#a078ff",
+                        "on-surface": "#e7e0ed",
+                        "primary-fixed": "#e9ddff",
+                        "primary": "#d0bcff",
+                        "secondary-container": "#573878",
+                        "on-secondary-container": "#caa6ef",
+                        "tertiary-container": "#8e8bc2",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "on-tertiary-fixed": "#181445",
+                        "on-primary": "#3c0091",
+                        "surface-container-highest": "#37333d",
+                        "background": "#15121b",
+                        "outline-variant": "#494454",
+                        "surface-dim": "#15121b",
+                        "inverse-on-surface": "#322f39",
+                        "on-secondary-fixed": "#29074a",
+                        "on-secondary-fixed-variant": "#573878",
+                        "on-tertiary": "#2d2a5b",
+                        "secondary-fixed": "#efdbff"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        margin: "32px",
+                        base: "4px",
+                        sm: "16px",
+                        xs: "8px",
+                        gutter: "24px",
+                        lg: "40px",
+                        "container-max": "1280px",
+                        md: "24px",
+                        xl: "64px"
+                    },
+                    fontFamily: {
+                        h2: ["Space Grotesk"],
+                        mono: ["Space Grotesk"],
+                        "body-md": ["Inter"],
+                        h3: ["Space Grotesk"],
+                        "body-lg": ["Inter"],
+                        h1: ["Space Grotesk"],
+                        "label-caps": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    fontSize: {
+                        h2: ["32px", { lineHeight: "1.2", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        mono: ["14px", { lineHeight: "1.5", fontWeight: "400" }],
+                        "body-md": ["16px", { lineHeight: "1.5", fontWeight: "400" }],
+                        h3: ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+                        "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+                        h1: ["48px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "label-caps": ["12px", { lineHeight: "1", letterSpacing: "0.05em", fontWeight: "600" }],
+                        "body-sm": ["14px", { lineHeight: "1.5", fontWeight: "400" }]
+                    }
+                }
+            }
+        };
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .glowing-focus:focus-within {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+            border-color: #d0bcff;
+        }
+        .bg-abyss {
+            background-color: #000000;
+        }
+    </style>
+</head>
+<body class="bg-abyss text-on-surface h-screen w-full overflow-hidden flex flex-col md:flex-row font-body-md">
+<!-- Left Side: Visuals -->
+<div class="hidden md:flex w-1/2 relative flex-col justify-center items-center p-xl overflow-hidden bg-surface-container-lowest">
+<!-- Ambient Radial Gradients for Depth -->
+<div class="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] rounded-full bg-primary/20 blur-[120px] pointer-events-none"></div>
+<div class="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] rounded-full bg-secondary/10 blur-[100px] pointer-events-none"></div>
+<div class="z-10 text-center mb-lg">
+<h1 class="font-h1 text-h1 text-on-surface mb-xs">HackMatch</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md mx-auto">The elite destination for high-stakes collaborative engineering.</p>
+</div>
+<!-- Floating Mockup Visual -->
+<div class="relative w-full max-w-lg aspect-square">
+<div class="absolute inset-0 bg-gradient-to-br from-primary-container/20 to-transparent rounded-2xl p-sm transform -rotate-6 scale-95 shadow-[0_0_50px_rgba(139,92,246,0.15)] border border-outline-variant/30">
+<div class="w-full h-full bg-surface/80 rounded-xl overflow-hidden border border-white/10 relative">
+<img alt="Code mockup" class="object-cover w-full h-full opacity-60 mix-blend-screen" data-alt="A highly detailed, futuristic code editor interface displayed on a sleek monitor floating in a dark abyss. The screen shows intricate lines of code glowing in neon violet and indigo hues against a deep black background. The overall style is hyper-digital premium, emphasizing a high-tech, elite hacker aesthetic with subtle glassmorphism elements and deep shadow contrasts." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaT2MjTX9kavsUa1c_a1D4f4Ki7aJUFiUrnlrle7SePm5JvuQNRuPk-bCoS0nKLjhP2CAstY2GzjXrmcxbBTrXsvXeygqLQ4V1ylPDEci-0TsF2aTTJHGQW-iQiI6Q85O6tn4b5S4RcPzRvmQ62hu-9MmxxPGcZRUsOla9sPIoKki7PfFIjlxF9JQlR8FLiF2fddXqkpJjjqKAmblt5mzKLSE7dlHuqIY-bdAau8vBpZi2cNYRAlj0SmVTvz28WYJwxEfyXxhOCLo"/>
+</div>
+</div>
+<div class="absolute inset-0 bg-gradient-to-tl from-secondary-container/30 to-transparent rounded-2xl p-xs transform rotate-3 scale-105 shadow-[0_0_40px_rgba(219,184,255,0.1)] border border-white/5 backdrop-blur-sm z-10 flex items-center justify-center">
+<div class="glass-panel w-3/4 h-1/2 rounded-xl p-md flex flex-col justify-between">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container">person</span>
+</div>
+<div>
+<div class="h-4 w-24 bg-surface-variant rounded mb-2"></div>
+<div class="h-3 w-16 bg-surface-variant rounded"></div>
+</div>
+</div>
+<div class="flex gap-xs">
+<div class="h-6 px-3 bg-secondary-container rounded-full flex items-center justify-center">
+<span class="font-label-caps text-label-caps text-on-secondary-container">REACT</span>
+</div>
+<div class="h-6 px-3 bg-secondary-container rounded-full flex items-center justify-center">
+<span class="font-label-caps text-label-caps text-on-secondary-container">PYTHON</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Authentication -->
+<div class="w-full md:w-1/2 h-full flex flex-col justify-center items-center p-sm md:p-xl relative z-20">
+<!-- Subtle background glow for the form area -->
+<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-lg max-h-lg rounded-full bg-primary/5 blur-[100px] pointer-events-none"></div>
+<div class="glass-panel w-full max-w-md p-lg rounded-2xl relative">
+<div class="text-center mb-lg md:hidden">
+<h1 class="font-h2 text-h2 text-primary font-bold">HackMatch</h1>
+</div>
+<h2 class="font-h3 text-h3 text-on-surface mb-xs">Welcome Back</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-lg">Enter your details to access the grid.</p>
+<form class="flex flex-col gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-outline" for="email">EMAIL</label>
+<div class="relative glowing-focus rounded-lg transition-all duration-300 border-b border-outline-variant/50 bg-surface-variant/20">
+<input class="w-full bg-transparent border-none text-on-surface font-body-md px-sm py-3 focus:ring-0 placeholder-on-surface-variant/50" id="email" placeholder="hacker@university.edu" type="email"/>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-outline" for="password">PASSWORD</label>
+<div class="relative glowing-focus rounded-lg transition-all duration-300 border-b border-outline-variant/50 bg-surface-variant/20">
+<input class="w-full bg-transparent border-none text-on-surface font-body-md px-sm py-3 focus:ring-0 placeholder-on-surface-variant/50" id="password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-outline" for="university">UNIVERSITY</label>
+<div class="relative glowing-focus rounded-lg transition-all duration-300 border-b border-outline-variant/50 bg-surface-variant/20">
+<input class="w-full bg-transparent border-none text-on-surface font-body-md px-sm py-3 focus:ring-0 placeholder-on-surface-variant/50" id="university" placeholder="Stanford University" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-outline" for="course">COURSE</label>
+<div class="relative glowing-focus rounded-lg transition-all duration-300 border-b border-outline-variant/50 bg-surface-variant/20">
+<input class="w-full bg-transparent border-none text-on-surface font-body-md px-sm py-3 focus:ring-0 placeholder-on-surface-variant/50" id="course" placeholder="Computer Science" type="text"/>
+</div>
+</div>
+<div class="mt-xs">
+<button class="w-full bg-gradient-to-r from-primary to-inverse-primary text-on-primary font-body-md font-bold py-3 px-sm rounded-lg hover:brightness-110 hover:shadow-[0_0_20px_rgba(208,188,255,0.4)] transition-all duration-300 flex items-center justify-center gap-xs" type="button">
+                        Login <span class="material-symbols-outlined text-sm">login</span>
+</button>
+</div>
+<div class="relative flex items-center py-xs">
+<div class="flex-grow border-t border-outline-variant/30"></div>
+<span class="flex-shrink-0 mx-4 font-label-caps text-label-caps text-outline">OR</span>
+<div class="flex-grow border-t border-outline-variant/30"></div>
+</div>
+<div class="flex flex-col gap-sm">
+<button class="w-full glass-panel text-on-surface font-body-md py-3 px-sm rounded-lg hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-xs border border-white/20" type="button">
+<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path></svg>
+                        Continue with Google
+                    </button>
+<button class="w-full text-primary hover:text-primary-container font-body-sm transition-colors duration-200" type="button">
+                        Create Account
+                    </button>
+</div>
+</form>
+</div>
+</div>
+</body></html>

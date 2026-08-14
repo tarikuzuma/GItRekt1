@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Team Dashboard - HackMatch</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#262354",
+                    "on-secondary": "#3f2160",
+                    "secondary-fixed-dim": "#dbb8ff",
+                    "surface-variant": "#37333d",
+                    "on-surface-variant": "#cbc3d7",
+                    "surface-bright": "#3b3742",
+                    "on-error-container": "#ffdad6",
+                    "on-error": "#690005",
+                    "outline": "#958ea0",
+                    "surface-container-high": "#2c2832",
+                    "on-primary-fixed-variant": "#5516be",
+                    "on-background": "#e7e0ed",
+                    "on-primary-fixed": "#23005c",
+                    "surface-container": "#211e27",
+                    "secondary": "#dbb8ff",
+                    "tertiary-fixed-dim": "#c4c1fb",
+                    "surface-container-lowest": "#0f0d15",
+                    "primary-fixed-dim": "#d0bcff",
+                    "on-primary-container": "#340080",
+                    "on-tertiary-fixed-variant": "#444173",
+                    "inverse-surface": "#e7e0ed",
+                    "surface": "#15121b",
+                    "inverse-primary": "#6d3bd7",
+                    "surface-tint": "#d0bcff",
+                    "tertiary-fixed": "#e3dfff",
+                    "surface-container-low": "#1d1a23",
+                    "tertiary": "#c4c1fb",
+                    "primary-container": "#a078ff",
+                    "on-surface": "#e7e0ed",
+                    "primary-fixed": "#e9ddff",
+                    "primary": "#d0bcff",
+                    "secondary-container": "#573878",
+                    "on-secondary-container": "#caa6ef",
+                    "tertiary-container": "#8e8bc2",
+                    "error-container": "#93000a",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed": "#181445",
+                    "on-primary": "#3c0091",
+                    "surface-container-highest": "#37333d",
+                    "background": "#15121b",
+                    "outline-variant": "#494454",
+                    "surface-dim": "#15121b",
+                    "inverse-on-surface": "#322f39",
+                    "on-secondary-fixed": "#29074a",
+                    "on-secondary-fixed-variant": "#573878",
+                    "on-tertiary": "#2d2a5b",
+                    "secondary-fixed": "#efdbff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin": "32px",
+                    "base": "4px",
+                    "sm": "16px",
+                    "xs": "8px",
+                    "gutter": "24px",
+                    "lg": "40px",
+                    "container-max": "1280px",
+                    "md": "24px",
+                    "xl": "64px"
+            },
+            "fontFamily": {
+                    "h2": [
+                            "Space Grotesk"
+                    ],
+                    "mono": [
+                            "Space Grotesk"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "h3": [
+                            "Space Grotesk"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "h1": [
+                            "Space Grotesk"
+                    ],
+                    "label-caps": [
+                            "Inter"
+                    ],
+                    "body-sm": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "h2": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "mono": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "h3": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "h1": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "1",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+        }
+        .bg-abyss {
+            background-color: #000000;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .glow-hover:hover {
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.2);
+        }
+        .radial-glow {
+            background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.15), transparent 60%);
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #d0bcff 0%, #a078ff 100%);
+        }
+        .btn-gradient:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+        
+        /* Dashboard specific styles */
+        .meter-conic {
+            background: conic-gradient(from 180deg, #d0bcff 0%, #a078ff 75%, rgba(255,255,255,0.1) 75%, rgba(255,255,255,0.1) 100%);
+        }
+    </style>
+</head>
+<body class="bg-abyss text-on-surface font-body-md antialiased min-h-screen flex overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- Ambient Illumination -->
+<div class="fixed inset-0 pointer-events-none z-0 radial-glow"></div>
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden lg:flex flex-col h-screen p-sm fixed left-0 top-0 z-40 bg-surface/5 backdrop-blur-2xl border-r border-outline-variant/10 shadow-2xl docked left-0 h-full w-64">
+<div class="flex items-center gap-xs mb-lg px-xs">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<div>
+<h1 class="font-h3 text-h3 text-primary tracking-tighter">HackMatch</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Engineering Elite</p>
+</div>
+</div>
+<div class="flex-1 space-y-xs">
+<a class="flex items-center gap-xs text-on-surface-variant p-sm hover:bg-white/5 hover:text-primary transition-all font-label-caps text-label-caps rounded-xl group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">explore</span>
+<span>Discover</span>
+</a>
+<a class="flex items-center gap-xs text-on-surface-variant p-sm hover:bg-white/5 hover:text-primary transition-all font-label-caps text-label-caps rounded-xl group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">groups</span>
+<span>Swipe</span>
+</a>
+<a class="flex items-center gap-xs bg-primary/10 text-primary rounded-xl p-sm shadow-[0_0_15px_rgba(208,188,255,0.3)] font-label-caps text-label-caps Active: translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-xs text-on-surface-variant p-sm hover:bg-white/5 hover:text-primary transition-all font-label-caps text-label-caps rounded-xl group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">chat</span>
+<span>Messages</span>
+</a>
+<a class="flex items-center gap-xs text-on-surface-variant p-sm hover:bg-white/5 hover:text-primary transition-all font-label-caps text-label-caps rounded-xl group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">person_outline</span>
+<span>Profile</span>
+</a>
+</div>
+<div class="mt-auto space-y-xs">
+<button class="w-full btn-gradient text-on-primary-container font-label-caps text-label-caps py-sm rounded-xl mb-md transition-all">Start Swiping</button>
+<a class="flex items-center gap-xs text-on-surface-variant p-sm hover:bg-white/5 hover:text-primary transition-all font-label-caps text-label-caps rounded-xl" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-xs text-on-surface-variant p-sm hover:bg-white/5 hover:text-primary transition-all font-label-caps text-label-caps rounded-xl" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+<span>Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 lg:ml-64 relative z-10 w-full">
+<!-- TopNavBar (Mobile only, replacing Bottom Nav for this dashboard view, as TopNavBar was provided in JSON and Dashboard isn't a deep sub-page, but TopNavBar wasn't explicitly forbidden. We use the JSON TopNavBar for mobile header) -->
+<header class="lg:hidden fixed top-0 w-full z-50 flex justify-between items-center px-margin py-xs max-w-container-max mx-auto bg-surface/10 backdrop-blur-xl border-b border-outline-variant/20 shadow-[0_0_30px_rgba(139,92,246,0.1)]">
+<div class="text-h3 font-h3 font-bold text-primary">HackMatch</div>
+<div class="flex gap-sm">
+<button class="text-primary hover:text-primary-container transition-colors duration-300 scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-primary hover:text-primary-container transition-colors duration-300 scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined">forum</span>
+</button>
+<img alt="User profile photo" class="w-8 h-8 rounded-full border border-primary" data-alt="A high-resolution, close-up portrait of a young professional wearing futuristic smart glasses. The lighting is moody and cinematic, featuring dramatic neon purple and deep indigo rim lights against an absolute black background. The overall style is hyper-digital, sleek, and premium, evoking a sense of advanced technology and elite engineering status." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZfFV8P4kLPWuRxBqtBOn-Z2QuKXi2rM4EM7hTko6s4rP8Yi_rFgOxQV_-Pf1qJbhmoD8gWBHIE2K6RxqzudpFAINuEw3aB5j97rQVyBAbN_7LMYxuOHCo6C8wtyJiU_BGYu6ggpk_GcfDykWWSVdbGEdWfknbIpgAFXA-Wq8BToxKCmYQGCwNY2NXBIjmrSeZIaFxMVugDA8lCQHgdn1N2RbdsuUtEH9qyteSWtTxd9eNoVjlkqi8zDRUA_Zd5KCeLsTa8MALHOY"/>
+</div>
+</header>
+<div class="max-w-container-max mx-auto px-margin lg:px-margin pt-xl lg:pt-margin pb-xl min-h-screen flex flex-col gap-gutter">
+<!-- Dashboard Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-sm">
+<div>
+<h2 class="font-h1 text-h1 text-primary-fixed">Team Nexus</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2">Managing Team 'Quantum Leaps' for Global AI Hack 2024</p>
+</div>
+<div class="flex gap-sm">
+<button class="glass-panel text-primary font-label-caps text-label-caps px-sm py-xs rounded-full flex items-center gap-xs glow-hover transition-all">
+<span class="material-symbols-outlined text-[16px]">edit</span> Edit Team
+                    </button>
+<button class="btn-gradient text-on-primary-container font-label-caps text-label-caps px-md py-xs rounded-full flex items-center gap-xs transition-all">
+<span class="material-symbols-outlined text-[16px]">add</span> Invite Member
+                    </button>
+</div>
+</div>
+<!-- Main Dashboard Grid (Bento Layout) -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Roster Section (Spans 8 cols) -->
+<div class="md:col-span-8 glass-panel rounded-xl p-md flex flex-col gap-md relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -z-10"></div>
+<div class="flex justify-between items-center border-b border-white/10 pb-sm">
+<h3 class="font-h3 text-h3 text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary">groups</span> Active Roster
+                        </h3>
+<span class="font-mono text-mono text-primary bg-primary/10 px-xs py-base rounded-md">3/4 Members</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-sm">
+<!-- Member Card 1 -->
+<div class="glass-panel rounded-lg p-sm flex items-center gap-sm glow-hover transition-all cursor-pointer border border-white/5 hover:border-primary/50 relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<img alt="Team Lead Avatar" class="w-12 h-12 rounded-full border-2 border-primary object-cover z-10" data-alt="A hyper-realistic portrait of a male software engineer with a confident expression. The lighting is high-end studio style, characterized by a deep obsidian background contrasted with a sharp, vibrant violet key light illuminating the right side of his face. The overall aesthetic is slick, modern, and aligned with a premium digital tech brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2-FJ5YJOgy9en3pPwDEB-zAD8neelxraY-YePQRoA0I9xKAy0zIgQ_RtN3ZMYwyVIkVpJrZvxOGXbm75OPmHT0w2tnO7aN1qfwGfcJ5fAlSaV0lczSCfmsORyt04IkW0_XSpzqLEazMLJ7xo9pAYfekmZro_ooxRGIMOfHdkZhvpIkHH_J203ApqPsUcNfq5ljjN37mN7_mumMkZIxspqyRfb3fqCbHDCgJZ8RsHudb_ItUuOse8ruzXyV53oOAtejSIhS5QFsUI"/>
+<div class="flex-1 z-10">
+<h4 class="font-body-md text-body-md font-semibold text-primary-fixed-dim">Alex Rivera</h4>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Full Stack / AI</p>
+</div>
+<span class="material-symbols-outlined text-primary bg-primary/10 rounded-full p-1 z-10">star</span>
+</div>
+<!-- Member Card 2 -->
+<div class="glass-panel rounded-lg p-sm flex items-center gap-sm glow-hover transition-all cursor-pointer border border-white/5 hover:border-primary/50 relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<img alt="Frontend Avatar" class="w-12 h-12 rounded-full border-2 border-surface-variant object-cover z-10" data-alt="A stylized portrait of a female UI developer looking thoughtfully off-camera. The scene is bathed in ambient, soft glassmorphic lighting with hints of deep indigo and soft white reflections. The background is a pure, infinite black void, emphasizing a hyper-digital, focused, and professional high-tech environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7IJpujrOR7L6QTx7_ZOWWOBA11BcaA9fGkD4QboEwbuLt4yuLDXANERKGeuypAlDRbfyrzowxz8K22pT8Ng6E98l583g8HHKxHms_WJ5K8yM_aJD9j1poVS5k1m45XltovUxfwLqsytC3ye_p2PX2sgb455AR70eTVHIXtKG5iVDJYVUUR01OzbGqWfTjwv_p5g6vIf_WDEaf_D8UE9SMBcQPcGiQfIT_5HoAAwyAqb8erBwQy9CsRbq-nLvWltOwhi_FTvzb7wA"/>
+<div class="flex-1 z-10">
+<h4 class="font-body-md text-body-md font-semibold text-on-surface">Sarah Chen</h4>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Frontend React</p>
+</div>
+</div>
+<!-- Member Card 3 -->
+<div class="glass-panel rounded-lg p-sm flex items-center gap-sm glow-hover transition-all cursor-pointer border border-white/5 hover:border-primary/50 relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<img alt="Backend Avatar" class="w-12 h-12 rounded-full border-2 border-surface-variant object-cover z-10" data-alt="A striking profile image of a male backend systems architect. He is framed against an absolute black backdrop, highlighted by subtle, glowing violet edge lights that suggest high-end server room illumination. The style is sharp, minimalist, and exudes technical competence in a premium SaaS context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-BvXv3k2uVR2-amsGAkREKkkQBk8FasGzCxzUxIJuw0syvE9urUFw6dINKiOivh7JfRBinBAlzz4vs7M6U57esnY38jDvt_XEwqHDDCA2Ngz4F2wKlYdKxul5LbexEq9IYjQTQpzBDlUlqmLJT30U8uD5-srXZiFIl70vCiu_Qeyhi3hm5qJ4la3GXbmaN4mu3c2uoShPQvfizyfrEUcBki4R0nGrhusX48jaeg4MQV2ojSDrFRhOBCD6GbKFDpIpAsmWuyq3k1E"/>
+<div class="flex-1 z-10">
+<h4 class="font-body-md text-body-md font-semibold text-on-surface">Marcus Thorne</h4>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Systems Architecture</p>
+</div>
+</div>
+<!-- Missing Role Indicator -->
+<div class="glass-panel rounded-lg p-sm flex items-center gap-sm border border-dashed border-primary/40 bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer group">
+<div class="w-12 h-12 rounded-full border-2 border-dashed border-primary/50 flex items-center justify-center bg-surface">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">add</span>
+</div>
+<div class="flex-1">
+<h4 class="font-body-md text-body-md font-semibold text-primary/70 group-hover:text-primary transition-colors">Missing Role</h4>
+<p class="font-label-caps text-label-caps text-secondary-fixed-dim">UX/UI Designer needed</p>
+</div>
+<button class="bg-primary-container text-on-primary-container text-xs px-2 py-1 rounded">Find</button>
+</div>
+</div>
+</div>
+<!-- Chemistry & Event Info (Spans 4 cols) -->
+<div class="md:col-span-4 flex flex-col gap-gutter">
+<!-- Team Chemistry Meter -->
+<div class="glass-panel rounded-xl p-md flex flex-col items-center justify-center relative glow-hover transition-all min-h-[240px]">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant absolute top-md left-md">Team Chemistry</h3>
+<div class="relative w-32 h-32 mt-sm flex items-center justify-center">
+<!-- Conic Gradient Meter -->
+<div class="absolute inset-0 rounded-full meter-conic blur-[2px]"></div>
+<div class="absolute inset-1 rounded-full bg-surface-container flex items-center justify-center flex-col z-10 border border-white/5">
+<span class="font-h2 text-h2 text-primary-fixed leading-none">75<span class="text-body-sm">%</span></span>
+<span class="font-label-caps text-label-caps text-outline text-[10px]">Synergy</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-center text-on-surface-variant mt-md">High technical overlap. Consider adding design expertise to balance.</p>
+</div>
+<!-- Event Details -->
+<div class="glass-panel rounded-xl p-md flex flex-col gap-sm relative overflow-hidden group border border-primary/20">
+<div class="absolute bottom-0 right-0 w-32 h-32 bg-secondary-container/20 rounded-full blur-[40px] -z-10 group-hover:bg-primary-container/30 transition-colors"></div>
+<h3 class="font-h3 text-h3 text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary-fixed-dim">rocket_launch</span> Global AI Hack
+                        </h3>
+<div class="flex flex-col gap-xs mt-xs">
+<div class="flex justify-between items-center border-b border-white/5 pb-2">
+<span class="font-mono text-mono text-on-surface-variant">Status</span>
+<span class="font-label-caps text-label-caps text-primary bg-primary/10 px-2 py-1 rounded-full flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> Registration Open</span>
+</div>
+<div class="flex justify-between items-center border-b border-white/5 pb-2">
+<span class="font-mono text-mono text-on-surface-variant">Starts In</span>
+<span class="font-mono text-mono text-on-surface">14d 08h 22m</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-mono text-mono text-on-surface-variant">Prize Pool</span>
+<span class="font-mono text-mono text-secondary-fixed-dim">$50,000</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Shared Task List (Spans full width below) -->
+<div class="md:col-span-12 glass-panel rounded-xl p-md flex flex-col gap-md">
+<div class="flex justify-between items-center border-b border-white/10 pb-sm">
+<h3 class="font-h3 text-h3 text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary">checklist</span> Objective Queue
+                        </h3>
+<button class="text-primary hover:text-primary-fixed transition-colors flex items-center gap-1 font-label-caps text-label-caps">
+<span class="material-symbols-outlined text-[16px]">add_task</span> Add Task
+                        </button>
+</div>
+<div class="flex flex-col gap-xs">
+<!-- Task Item -->
+<div class="flex items-center gap-sm p-sm rounded-lg hover:bg-white/5 transition-colors group">
+<button class="w-5 h-5 rounded border border-primary/50 flex items-center justify-center text-transparent hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</button>
+<div class="flex-1">
+<p class="font-body-md text-body-md text-on-surface">Finalize API Architecture Schema</p>
+</div>
+<div class="flex items-center gap-sm">
+<span class="font-label-caps text-label-caps px-2 py-1 rounded-full bg-surface-container-high text-on-surface-variant border border-outline/20">Backend</span>
+<img alt="Assignee" class="w-6 h-6 rounded-full opacity-70 group-hover:opacity-100 transition-opacity" data-alt="A small, circular avatar portrait of a male backend engineer, set against a dark void background. Minimalist lighting emphasizes a professional, high-tech SaaS user profile aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAa8ttelslUWO3mjlmuA0Eq6tJFrKB7i-ECy8itadut2eUWIJ-Kr3ZrlA3IVcNvWbl4oILHx2zSef9DOBVW8Ip8Je1xxm0eJ7FtDww5mfzOPw3XnA9YC1i_VPhFgXa2BP-isP69j1PMNmZS4t-WrCQVz_gKh2gN1yCEBBB8pULRHFZXwLqM_OLaWTFeDZTrc1UftCCImZ8VRu7mA4I0Q_TYK5I7V2Cg1aNiPmy36O_gqTwxGgv0ZaQzpiEL4O8MCfmDhjmWBkPA2RI"/>
+</div>
+</div>
+<!-- Task Item -->
+<div class="flex items-center gap-sm p-sm rounded-lg hover:bg-white/5 transition-colors group">
+<button class="w-5 h-5 rounded border border-primary/50 flex items-center justify-center text-transparent hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</button>
+<div class="flex-1">
+<p class="font-body-md text-body-md text-on-surface">Mockup primary user flow screens</p>
+</div>
+<div class="flex items-center gap-sm">
+<span class="font-label-caps text-label-caps px-2 py-1 rounded-full bg-error-container/20 text-error border border-error/20 flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">warning</span> Unassigned</span>
+</div>
+</div>
+<!-- Completed Task Item -->
+<div class="flex items-center gap-sm p-sm rounded-lg opacity-50">
+<button class="w-5 h-5 rounded border border-primary bg-primary text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</button>
+<div class="flex-1">
+<p class="font-body-md text-body-md text-outline line-through">Brainstorm project name and repository setup</p>
+</div>
+<div class="flex items-center gap-sm">
+<span class="font-label-caps text-label-caps px-2 py-1 rounded-full bg-surface-container-high text-on-surface-variant border border-outline/20">Admin</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-sm pb-8 pt-xs bg-surface/20 backdrop-blur-lg border-t border-outline-variant/20 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] docked full-width bottom-0 rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-container font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined">search</span>
+<span>Explore</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-container font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined">style</span>
+<span>Match</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary filter brightness-110 drop-shadow-[0_0_8px_rgba(208,188,255,0.6)] font-label-caps text-label-caps scale-110 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+<span>Teams</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-container font-label-caps text-label-caps" href="#">
+<span class="material-symbols-outlined">forum</span>
+<span>Chat</span>
+</a>
+</nav>
+</body></html>

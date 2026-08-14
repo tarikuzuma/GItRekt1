@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HackMatch - Find Your Perfect Hackathon Team</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Space+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-container": "#262354",
+                      "on-secondary": "#3f2160",
+                      "secondary-fixed-dim": "#dbb8ff",
+                      "surface-variant": "#37333d",
+                      "on-surface-variant": "#cbc3d7",
+                      "surface-bright": "#3b3742",
+                      "on-error-container": "#ffdad6",
+                      "on-error": "#690005",
+                      "outline": "#958ea0",
+                      "surface-container-high": "#2c2832",
+                      "on-primary-fixed-variant": "#5516be",
+                      "on-background": "#e7e0ed",
+                      "on-primary-fixed": "#23005c",
+                      "surface-container": "#211e27",
+                      "secondary": "#dbb8ff",
+                      "tertiary-fixed-dim": "#c4c1fb",
+                      "surface-container-lowest": "#0f0d15",
+                      "primary-fixed-dim": "#d0bcff",
+                      "on-primary-container": "#340080",
+                      "on-tertiary-fixed-variant": "#444173",
+                      "inverse-surface": "#e7e0ed",
+                      "surface": "#15121b",
+                      "inverse-primary": "#6d3bd7",
+                      "surface-tint": "#d0bcff",
+                      "tertiary-fixed": "#e3dfff",
+                      "surface-container-low": "#1d1a23",
+                      "tertiary": "#c4c1fb",
+                      "primary-container": "#a078ff",
+                      "on-surface": "#e7e0ed",
+                      "primary-fixed": "#e9ddff",
+                      "primary": "#d0bcff",
+                      "secondary-container": "#573878",
+                      "on-secondary-container": "#caa6ef",
+                      "tertiary-container": "#8e8bc2",
+                      "error-container": "#93000a",
+                      "error": "#ffb4ab",
+                      "on-tertiary-fixed": "#181445",
+                      "on-primary": "#3c0091",
+                      "surface-container-highest": "#37333d",
+                      "background": "#15121b",
+                      "outline-variant": "#494454",
+                      "surface-dim": "#15121b",
+                      "inverse-on-surface": "#322f39",
+                      "on-secondary-fixed": "#29074a",
+                      "on-secondary-fixed-variant": "#573878",
+                      "on-tertiary": "#2d2a5b",
+                      "secondary-fixed": "#efdbff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin": "32px",
+                      "base": "4px",
+                      "sm": "16px",
+                      "xs": "8px",
+                      "gutter": "24px",
+                      "lg": "40px",
+                      "container-max": "1280px",
+                      "md": "24px",
+                      "xl": "64px"
+              },
+              "fontFamily": {
+                      "h2": [
+                              "Space Grotesk"
+                      ],
+                      "mono": [
+                              "Space Grotesk"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "h3": [
+                              "Space Grotesk"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "h1": [
+                              "Space Grotesk"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "h2": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "mono": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h3": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h1": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .glow-effect {
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.2);
+        }
+        .bg-abyss {
+            background-color: #000000;
+        }
+        .ambient-glow {
+            background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15) 0%, rgba(0,0,0,0) 70%);
+        }
+        .btn-primary-gradient {
+            background: linear-gradient(135deg, #a078ff 0%, #6d3bd7 100%);
+        }
+    </style>
+</head>
+<body class="bg-abyss text-on-surface font-body-md min-h-screen flex items-center justify-center relative overflow-hidden py-12">
+<!-- Ambient Illumination -->
+<div class="absolute inset-0 z-0 ambient-glow pointer-events-none"></div>
+<!-- Floating Glassmorphism Element 1 -->
+<div class="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-primary/10 blur-3xl -z-10 pointer-events-none mix-blend-screen"></div>
+<!-- Floating Glassmorphism Element 2 -->
+<div class="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-secondary-container/20 blur-3xl -z-10 pointer-events-none mix-blend-screen"></div>
+<!-- Floating Abstract Shape -->
+<div class="absolute top-20 right-20 w-32 h-32 rounded-xl glass-panel rotate-12 -z-10 pointer-events-none"></div>
+<!-- Floating Abstract Shape 2 -->
+<div class="absolute bottom-32 left-10 w-24 h-24 rounded-full glass-panel -z-10 pointer-events-none"></div>
+<main class="relative z-10 w-full max-w-container-max mx-auto px-margin flex flex-col lg:flex-row items-center justify-between gap-xl">
+<!-- Left side: Hero -->
+<div class="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left">
+<!-- Logo Area -->
+<div class="mb-gutter flex items-center justify-center lg:justify-start gap-xs">
+<span class="material-symbols-outlined text-[48px] text-primary" style="font-variation-settings: 'FILL' 1;">
+                code_blocks
+            </span>
+<h1 class="font-h1 text-h1 text-on-surface tracking-tighter">HackMatch</h1>
+</div>
+<h2 class="font-h1 text-h1 text-on-surface mb-sm leading-tight max-w-2xl">
+            Find Your Perfect <span class="text-primary">Hackathon</span> Team.
+        </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl mx-auto lg:mx-0">
+            Swipe, match, and collaborate with student innovators. Build the future, together.
+        </p>
+</div>
+<!-- Right side: Sign In Form -->
+<div class="w-full max-w-md glass-panel p-lg rounded-[32px] glow-effect flex flex-col">
+<h3 class="font-h3 text-h3 text-on-surface mb-md text-center">Welcome Back</h3>
+<form class="flex flex-col gap-sm">
+<div>
+<label class="block text-body-sm text-on-surface-variant mb-base">Email</label>
+<input class="w-full bg-surface-container/50 border border-outline-variant/50 rounded-lg px-sm py-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-on-surface-variant/50" placeholder="Enter your email" type="email"/>
+</div>
+<div>
+<label class="block text-body-sm text-on-surface-variant mb-base">Password</label>
+<input class="w-full bg-surface-container/50 border border-outline-variant/50 rounded-lg px-sm py-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-on-surface-variant/50" placeholder="Enter your password" type="password"/>
+</div>
+<div>
+<label class="block text-body-sm text-on-surface-variant mb-base">University</label>
+<input class="w-full bg-surface-container/50 border border-outline-variant/50 rounded-lg px-sm py-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-on-surface-variant/50" placeholder="Enter your university" type="text"/>
+</div>
+<div>
+<label class="block text-body-sm text-on-surface-variant mb-base">Course</label>
+<input class="w-full bg-surface-container/50 border border-outline-variant/50 rounded-lg px-sm py-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-on-surface-variant/50" placeholder="Enter your course" type="text"/>
+</div>
+<button class="mt-sm btn-primary-gradient text-on-primary font-label-caps text-label-caps px-lg py-md rounded-full hover:brightness-110 transition-all glow-effect w-full" type="button">
+                Login
+            </button>
+<div class="flex items-center gap-sm my-xs">
+<div class="h-px bg-outline-variant/50 flex-1"></div>
+<span class="text-label-caps text-on-surface-variant uppercase">Or</span>
+<div class="h-px bg-outline-variant/50 flex-1"></div>
+</div>
+<button class="glass-panel text-on-surface font-label-caps text-label-caps px-lg py-md rounded-full hover:bg-white/10 transition-all w-full flex items-center justify-center gap-sm" type="button">
+<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+                Continue with Google
+            </button>
+</form>
+</div>
+</main>
+</body></html>

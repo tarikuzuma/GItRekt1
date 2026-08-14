@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HackMatch - Event Discovery</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Space+Grotesk:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-container": "#262354",
+                      "on-secondary": "#3f2160",
+                      "secondary-fixed-dim": "#dbb8ff",
+                      "surface-variant": "#37333d",
+                      "on-surface-variant": "#cbc3d7",
+                      "surface-bright": "#3b3742",
+                      "on-error-container": "#ffdad6",
+                      "on-error": "#690005",
+                      "outline": "#958ea0",
+                      "surface-container-high": "#2c2832",
+                      "on-primary-fixed-variant": "#5516be",
+                      "on-background": "#e7e0ed",
+                      "on-primary-fixed": "#23005c",
+                      "surface-container": "#211e27",
+                      "secondary": "#dbb8ff",
+                      "tertiary-fixed-dim": "#c4c1fb",
+                      "surface-container-lowest": "#0f0d15",
+                      "primary-fixed-dim": "#d0bcff",
+                      "on-primary-container": "#340080",
+                      "on-tertiary-fixed-variant": "#444173",
+                      "inverse-surface": "#e7e0ed",
+                      "surface": "#15121b",
+                      "inverse-primary": "#6d3bd7",
+                      "surface-tint": "#d0bcff",
+                      "tertiary-fixed": "#e3dfff",
+                      "surface-container-low": "#1d1a23",
+                      "tertiary": "#c4c1fb",
+                      "primary-container": "#a078ff",
+                      "on-surface": "#e7e0ed",
+                      "primary-fixed": "#e9ddff",
+                      "primary": "#d0bcff",
+                      "secondary-container": "#573878",
+                      "on-secondary-container": "#caa6ef",
+                      "tertiary-container": "#8e8bc2",
+                      "error-container": "#93000a",
+                      "error": "#ffb4ab",
+                      "on-tertiary-fixed": "#181445",
+                      "on-primary": "#3c0091",
+                      "surface-container-highest": "#37333d",
+                      "background": "#15121b",
+                      "outline-variant": "#494454",
+                      "surface-dim": "#15121b",
+                      "inverse-on-surface": "#322f39",
+                      "on-secondary-fixed": "#29074a",
+                      "on-secondary-fixed-variant": "#573878",
+                      "on-tertiary": "#2d2a5b",
+                      "secondary-fixed": "#efdbff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin": "32px",
+                      "base": "4px",
+                      "sm": "16px",
+                      "xs": "8px",
+                      "gutter": "24px",
+                      "lg": "40px",
+                      "container-max": "1280px",
+                      "md": "24px",
+                      "xl": "64px"
+              },
+              "fontFamily": {
+                      "h2": [
+                              "Space Grotesk"
+                      ],
+                      "mono": [
+                              "Space Grotesk"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "h3": [
+                              "Space Grotesk"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "h1": [
+                              "Space Grotesk"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "h2": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "mono": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h3": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h1": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.1",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen relative overflow-x-hidden selection:bg-primary/30 selection:text-primary">
+<!-- Ambient Glows -->
+<div class="fixed top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-primary/10 blur-[120px] pointer-events-none z-0"></div>
+<div class="fixed bottom-[-20%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-secondary/5 blur-[100px] pointer-events-none z-0"></div>
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden lg:flex flex-col h-screen p-sm fixed left-0 top-0 z-40 bg-surface/5 backdrop-blur-2xl border-r border-outline-variant/10 shadow-2xl w-64">
+<div class="mb-xl px-sm pt-sm flex flex-col gap-1">
+<h1 class="font-h3 text-primary tracking-tighter text-h3">HackMatch</h1>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Engineering Elite</p>
+</div>
+<div class="flex-1 flex flex-col gap-xs font-label-caps text-label-caps">
+<a class="flex items-center gap-xs bg-primary/10 text-primary rounded-xl p-sm shadow-[0_0_15px_rgba(208,188,255,0.3)] translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+                Discover
+            </a>
+<a class="flex items-center gap-xs text-on-surface-variant p-sm hover:bg-white/5 hover:text-primary transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="Groups">groups</span>
+                Swipe
+            </a>
+<a class="flex items-center gap-xs text-on-surface-variant p-sm hover:bg-white/5 hover:text-primary transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-xs text-on-surface-variant p-sm hover:bg-white/5 hover:text-primary transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+                Messages
+            </a>
+<a class="flex items-center gap-xs text-on-surface-variant p-sm hover:bg-white/5 hover:text-primary transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="person_outline">person_outline</span>
+                Profile
+            </a>
+</div>
+<div class="mt-auto flex flex-col gap-sm">
+<button class="w-full py-xs px-sm rounded-lg bg-gradient-to-r from-primary to-primary-container text-on-primary font-label-caps text-label-caps hover:brightness-110 shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all">Start Swiping</button>
+<div class="flex flex-col gap-xs font-label-caps text-label-caps border-t border-outline-variant/10 pt-sm mt-sm">
+<a class="flex items-center gap-xs text-on-surface-variant p-sm hover:bg-white/5 hover:text-primary transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Settings
+                </a>
+<a class="flex items-center gap-xs text-on-surface-variant p-sm hover:bg-white/5 hover:text-primary transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+                    Support
+                </a>
+</div>
+</div>
+</nav>
+<!-- TopNavBar (Mobile) -->
+<header class="lg:hidden fixed top-0 w-full z-50 flex justify-between items-center px-margin py-xs max-w-container-max mx-auto bg-surface/10 backdrop-blur-xl border-b border-outline-variant/20 shadow-[0_0_30px_rgba(139,92,246,0.1)]">
+<div class="flex items-center gap-xs text-primary">
+<h1 class="text-h3 font-h3 font-bold text-primary">HackMatch</h1>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors duration-300 scale-95 active:scale-90 transition-transform cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors duration-300 scale-95 active:scale-90 transition-transform cursor-pointer" data-icon="forum">forum</span>
+<img alt="User profile photo" class="w-8 h-8 rounded-full border border-outline-variant/30 ml-xs" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgasUlK9NkHUfS4OPaQHpT9TEW2TlTczhCm0GJZj_3T1oSmS4pE70Y9kxExIGN7iioUmVY79eyRwqJXMzZIhwEeu08DIJBG56zDN_rqJEA66qyVQxhMnv-FUafx4_tWOgvCszKO0W5POPDKRKNIdkbuHpjaaq9xG7WJGVGl62_CqhnN4KZ1t45Aogpk_ry2yvtINPe6rLuWma6YaVY8E_nWncFD4UMK_FLkRkW--5uJf23hL2PV02hykyr5rEXcNKdKEvD5fcUbM4"/>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="lg:ml-64 pt-xl lg:pt-0 min-h-screen relative z-10 pb-24 lg:pb-0">
+<div class="max-w-container-max mx-auto px-sm md:px-margin py-lg md:py-xl">
+<!-- Page Header & Search/Filter -->
+<div class="mb-lg space-y-md">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<h2 class="font-h1 text-h1 text-on-surface mb-xs">Upcoming Hackathons</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Discover elite engineering challenges and form your ultimate squad.</p>
+</div>
+</div>
+<!-- Search & Filters -->
+<div class="flex flex-col md:flex-row gap-sm items-center bg-surface-container/50 backdrop-blur-md border border-white/5 rounded-xl p-xs shadow-lg">
+<div class="flex-1 w-full relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full bg-transparent border-none text-on-surface font-body-md text-body-md pl-xl py-sm focus:ring-0 placeholder:text-on-surface-variant/50 focus:border-b focus:border-primary transition-colors outline-none rounded-none" placeholder="Search events, technologies, or locations..." type="text"/>
+</div>
+<div class="h-8 w-px bg-outline-variant/20 hidden md:block"></div>
+<div class="flex items-center gap-xs w-full md:w-auto overflow-x-auto no-scrollbar pb-2 md:pb-0 px-sm md:px-0">
+<button class="flex items-center gap-1 px-sm py-2 rounded-full bg-primary/10 border border-primary/20 text-primary font-label-caps text-label-caps whitespace-nowrap hover:bg-primary/20 transition-colors">
+                            All Events
+                        </button>
+<button class="flex items-center gap-1 px-sm py-2 rounded-full bg-white/5 border border-white/5 text-on-surface-variant font-label-caps text-label-caps whitespace-nowrap hover:bg-white/10 transition-colors">
+                            Web3
+                        </button>
+<button class="flex items-center gap-1 px-sm py-2 rounded-full bg-white/5 border border-white/5 text-on-surface-variant font-label-caps text-label-caps whitespace-nowrap hover:bg-white/10 transition-colors">
+                            AI/ML
+                        </button>
+<button class="flex items-center gap-1 px-sm py-2 rounded-full bg-white/5 border border-white/5 text-on-surface-variant font-label-caps text-label-caps whitespace-nowrap hover:bg-white/10 transition-colors">
+                            Fintech
+                        </button>
+<button class="flex items-center gap-1 px-sm py-2 rounded-full bg-surface-container-high border border-outline-variant/20 text-on-surface font-label-caps text-label-caps whitespace-nowrap hover:text-primary hover:border-primary/50 transition-colors ml-auto">
+<span class="material-symbols-outlined text-[16px]" data-icon="tune">tune</span> Filters
+                        </button>
+</div>
+</div>
+</div>
+<!-- Bento Grid - Events -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
+<!-- Event Card 1 (Featured - spans 2 cols on lg) -->
+<article class="md:col-span-2 relative group rounded-2xl bg-surface-container-lowest/40 backdrop-blur-xl border border-white/10 overflow-hidden hover:shadow-[0_0_40px_rgba(139,92,246,0.15)] transition-all duration-500 flex flex-col min-h-[400px]">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0 pointer-events-none"></div>
+<div class="relative h-48 w-full overflow-hidden shrink-0 z-10">
+<img alt="Cyberpunk server room with glowing violet and blue server racks, dynamic lighting, futuristic technology setting, hyper-digital aesthetic, deep blacks and vibrant neon accents." class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Cyberpunk server room with glowing violet and blue server racks, dynamic lighting, futuristic technology setting, hyper-digital aesthetic, deep blacks and vibrant neon accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkCRw6fLSqxYRezfG7gtTUBql7HJkOxTMzChANwJe92YRRof_L1swJOQZfOp7loE0HchAZkcxLHsaOE5V-BDNIs1aQQbITmluttheDPCF0v-7ZjTsGWqHpyHTH0HRQvG8GsNn4fHiMa8KHtKezsKXK_DsJxeaTPi-memBPijX0GnFglOBf_66lmT7901tR39QC9eSnX47brFVH8arWrslbRMKDuUNmUWV---tnV6-uw3cZinTRBVQHDqCTBX-lrUZ1AnoQjza4Czg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest to-transparent"></div>
+<div class="absolute top-sm right-sm bg-primary/90 text-on-primary font-label-caps text-label-caps px-sm py-1 rounded-full backdrop-blur-md shadow-lg flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="bolt">bolt</span> Featured
+                        </div>
+</div>
+<div class="p-md flex flex-col flex-1 relative z-10">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<h3 class="font-h2 text-h2 text-on-surface mb-1 group-hover:text-primary transition-colors duration-300">Global AI Challenge 2024</h3>
+<p class="font-mono text-mono text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_month">calendar_month</span> Oct 15 - 17
+                                    <span class="mx-2 opacity-50">|</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="location_on">location_on</span> Virtual / SF
+                                </p>
+</div>
+<div class="text-right">
+<span class="block font-h3 text-h3 text-primary">$100k</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Prize Pool</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant/80 mb-md flex-1 line-clamp-2">
+                            Push the boundaries of foundational models. Build the next generation of autonomous agents and generative workflows in this intensive 48-hour sprint.
+                        </p>
+<div class="flex items-end justify-between mt-auto pt-md border-t border-outline-variant/10">
+<div class="flex flex-wrap gap-xs">
+<span class="px-3 py-1 rounded-full bg-secondary-container/40 text-secondary border border-secondary/20 font-label-caps text-label-caps">LLMs</span>
+<span class="px-3 py-1 rounded-full bg-secondary-container/40 text-secondary border border-secondary/20 font-label-caps text-label-caps">Python</span>
+<span class="px-3 py-1 rounded-full bg-secondary-container/40 text-secondary border border-secondary/20 font-label-caps text-label-caps">PyTorch</span>
+</div>
+<button class="px-lg py-2 rounded-lg bg-gradient-to-r from-primary to-inverse-primary text-on-primary font-label-caps text-label-caps hover:brightness-110 shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] transition-all">
+                                Join Team
+                            </button>
+</div>
+</div>
+</article>
+<!-- Event Card 2 -->
+<article class="relative group rounded-2xl bg-surface-container-lowest/40 backdrop-blur-xl border border-white/10 overflow-hidden hover:border-primary/30 transition-all duration-300 flex flex-col h-[400px]">
+<div class="p-md flex flex-col flex-1 relative z-10">
+<div class="mb-sm">
+<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-tertiary to-inverse-primary p-0.5 mb-sm">
+<div class="w-full h-full bg-surface rounded-[10px] flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[24px]" data-icon="currency_bitcoin">currency_bitcoin</span>
+</div>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface mb-1 group-hover:text-primary transition-colors duration-300">DeFi Summit Hack</h3>
+<p class="font-mono text-mono text-on-surface-variant flex items-center gap-1 text-[12px]">
+<span class="material-symbols-outlined text-[14px]" data-icon="calendar_today">calendar_today</span> Nov 02 - 05
+                            </p>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant/80 mb-md flex-1">
+                            Architect zero-knowledge proofs and advanced smart contracts for the decentralized financial future.
+                        </p>
+<div class="mt-auto">
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="px-3 py-1 rounded-full bg-surface-bright text-on-surface-variant border border-outline-variant/30 font-label-caps text-label-caps">Solidity</span>
+<span class="px-3 py-1 rounded-full bg-surface-bright text-on-surface-variant border border-outline-variant/30 font-label-caps text-label-caps">Rust</span>
+</div>
+<button class="w-full py-2 rounded-lg bg-surface border border-outline-variant/30 text-on-surface font-label-caps text-label-caps hover:bg-white/5 hover:border-primary/50 hover:text-primary transition-all">
+                                View Details
+                            </button>
+</div>
+</div>
+</article>
+<!-- Event Card 3 -->
+<article class="relative group rounded-2xl bg-surface-container-lowest/40 backdrop-blur-xl border border-white/10 overflow-hidden hover:border-primary/30 transition-all duration-300 flex flex-col h-[400px]">
+<div class="relative h-32 w-full overflow-hidden shrink-0 z-10 border-b border-outline-variant/10">
+<img alt="Abstract data visualization with flowing lines and glowing nodes on a dark background, representing data science and analytics in a hyper-digital, premium SaaS aesthetic." class="w-full h-full object-cover opacity-60 mix-blend-luminosity group-hover:mix-blend-normal group-hover:opacity-100 transition-all duration-500" data-alt="Abstract data visualization with flowing lines and glowing nodes on a dark background, representing data science and analytics in a hyper-digital, premium SaaS aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHq0xyi9CBn5TCxc8woL739K4OQ2nUYNs3RgeyFdB9eALjd9irk7kby_k9CIF7VBDcS81_aPkW0NagzGZfivq331HeJ93KpdR5jrt8Q-Ho9jvF2YHVCQjTpN-uDu_rzEZdp0-vwGCpqNFZlIDkb06ksiLaoA51NFoUVh_G95kxXEPcYq63asVI8T6qrVi-mZEeuCFO3ZLHGeTfhFZMyhJXDftRXTq4p14-Qpq8eooYP3lPeS8DzQmXuZz_Q3_6yjiOLeYKk7XkBeU"/>
+</div>
+<div class="p-md flex flex-col flex-1 relative z-10">
+<div class="mb-sm">
+<h3 class="font-h3 text-h3 text-on-surface mb-1 group-hover:text-primary transition-colors duration-300">DataViz Mastery</h3>
+<p class="font-mono text-mono text-on-surface-variant flex items-center gap-1 text-[12px]">
+<span class="material-symbols-outlined text-[14px]" data-icon="calendar_today">calendar_today</span> Nov 12 - 14
+                            </p>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant/80 mb-md flex-1">
+                            Transform complex datasets into interactive, high-performance visual narratives.
+                        </p>
+<div class="mt-auto">
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="px-3 py-1 rounded-full bg-surface-bright text-on-surface-variant border border-outline-variant/30 font-label-caps text-label-caps">D3.js</span>
+<span class="px-3 py-1 rounded-full bg-surface-bright text-on-surface-variant border border-outline-variant/30 font-label-caps text-label-caps">WebGL</span>
+</div>
+<button class="w-full py-2 rounded-lg bg-surface border border-outline-variant/30 text-on-surface font-label-caps text-label-caps hover:bg-white/5 hover:border-primary/50 hover:text-primary transition-all">
+                                View Details
+                            </button>
+</div>
+</div>
+</article>
+<!-- Event Card 4 -->
+<article class="relative group rounded-2xl bg-surface-container-lowest/40 backdrop-blur-xl border border-white/10 overflow-hidden hover:border-primary/30 transition-all duration-300 flex flex-col h-[400px]">
+<div class="p-md flex flex-col flex-1 relative z-10">
+<div class="mb-sm">
+<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-secondary p-0.5 mb-sm">
+<div class="w-full h-full bg-surface rounded-[10px] flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[24px]" data-icon="stadia_controller">stadia_controller</span>
+</div>
+</div>
+<h3 class="font-h3 text-h3 text-on-surface mb-1 group-hover:text-primary transition-colors duration-300">XR Game Jam</h3>
+<p class="font-mono text-mono text-on-surface-variant flex items-center gap-1 text-[12px]">
+<span class="material-symbols-outlined text-[14px]" data-icon="calendar_today">calendar_today</span> Dec 01 - 03
+                            </p>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant/80 mb-md flex-1">
+                            Build immersive cross-reality experiences. Pushing the limits of spatial computing.
+                        </p>
+<div class="mt-auto">
+<div class="flex flex-wrap gap-xs mb-md">
+<span class="px-3 py-1 rounded-full bg-surface-bright text-on-surface-variant border border-outline-variant/30 font-label-caps text-label-caps">Unity</span>
+<span class="px-3 py-1 rounded-full bg-surface-bright text-on-surface-variant border border-outline-variant/30 font-label-caps text-label-caps">C#</span>
+</div>
+<button class="w-full py-2 rounded-lg bg-surface border border-outline-variant/30 text-on-surface font-label-caps text-label-caps hover:bg-white/5 hover:border-primary/50 hover:text-primary transition-all">
+                                View Details
+                            </button>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-sm pb-8 pt-xs bg-surface/20 backdrop-blur-lg border-t border-outline-variant/20 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-primary filter brightness-110 drop-shadow-[0_0_8px_rgba(208,188,255,0.6)] font-label-caps text-label-caps scale-110 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span>Explore</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-container font-label-caps text-label-caps transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="style">style</span>
+<span>Match</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-container font-label-caps text-label-caps transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="rocket_launch">rocket_launch</span>
+<span>Teams</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary-container font-label-caps text-label-caps transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
+<span>Chat</span>
+</a>
+</nav>
+</body></html>
