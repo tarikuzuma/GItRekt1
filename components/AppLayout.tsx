@@ -3,34 +3,33 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ReactNode, useEffect, useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const { data: session, status } = useSession();
   const [matchNotification, setMatchNotification] = useState<any>(null);
 
+  // Redirect unauthenticated users to login
   useEffect(() => {
-    const stored = localStorage.getItem('hackmatch_user_profile');
-    if (stored) {
-      setCurrentUser(JSON.parse(stored));
+    if (status === 'unauthenticated') {
+      router.push('/');
     }
-  }, []);
+  }, [status, router]);
 
-  // Global Real-time Listeners
+  // Global Real-time Listeners (only when session is active)
   useEffect(() => {
-    if (!currentUser?.id) return;
+    if (!session?.user?.id) return;
 
     const channel = supabase.channel('global-notifications')
       .on('broadcast', { event: 'new-match' }, ({ payload }) => {
         const { users, names } = payload;
-        if (users.includes(currentUser.id)) {
-          // If the current user is part of the match, show the overlay
+        if (users.includes(session.user.id)) {
           setMatchNotification({
-            name: names.find((n: string) => n !== currentUser.name) || 'A Hacker',
-            // In a real app, we'd fetch the other user's image too
+            name: names.find((n: string) => n !== session.user.name) || 'A Hacker',
             image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=400'
           });
         }
@@ -40,28 +39,28 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [currentUser, pathname]);
+  }, [session?.user?.id, pathname]);
 
   const handleLogout = async () => {
-    // Save to database before logging out
-    const savedProfile = localStorage.getItem('hackmatch_user_profile');
-    if (savedProfile) {
-      const profileData = JSON.parse(savedProfile);
-      if (profileData.email) {
-        try {
-          await fetch('/api/user/profile', {
-            method: 'POST',
-            body: JSON.stringify(profileData),
-            headers: { 'Content-Type': 'application/json' }
-          });
-        } catch (e) {
-          console.error('Failed to sync on logout');
-        }
-      }
-    }
-    localStorage.removeItem('hackmatch_user_profile');
-    router.push('/');
+    await signOut({ callbackUrl: '/' });
   };
+
+  // Show nothing while checking session status
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#8b5cf6]/30 border-t-[#8b5cf6] rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // Render null while redirecting (unauthenticated)
+  if (status === 'unauthenticated') {
+    return null;
+  }
+
+  const userInitial = session?.user?.name?.charAt(0)?.toUpperCase() || 
+                      session?.user?.email?.charAt(0)?.toUpperCase() || '?';
 
   return (
     <div className="bg-abyss text-on-surface font-body-md antialiased min-h-screen flex overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
@@ -100,6 +99,22 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </Link>
         </div>
         <div className="mt-auto space-y-xs">
+          {/* Current user display */}
+          {session?.user && (
+            <div className="flex items-center gap-3 px-sm py-xs mb-xs">
+              <div className="w-8 h-8 rounded-full bg-[#8b5cf6]/20 border border-[#8b5cf6]/30 flex items-center justify-center text-[#8b5cf6] font-bold text-sm shrink-0">
+                {session.user.image ? (
+                  <img src={session.user.image} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                ) : (
+                  userInitial
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-white truncate">{session.user.name || 'User'}</p>
+                <p className="text-[10px] text-slate-500 truncate">{session.user.email}</p>
+              </div>
+            </div>
+          )}
           <Link href="/swipe" className="block w-full bg-gradient-to-br from-primary-fixed-dim to-primary-container text-on-primary-container font-label-caps text-label-caps py-sm rounded-xl mb-md transition-all hover:brightness-110 text-center">Start Swiping</Link>
           <Link href="/settings" className={`flex items-center gap-xs p-sm font-label-caps text-label-caps rounded-xl transition-all ${pathname === '/settings' ? 'bg-primary/10 text-primary shadow-[0_0_15px_rgba(208,188,255,0.3)] duration-200' : 'text-on-surface-variant hover:bg-white/5 hover:text-primary'}`}>
             <span className="material-symbols-outlined" style={pathname === '/settings' ? { fontVariationSettings: "'FILL' 1" } : {}}>settings</span>
@@ -120,14 +135,22 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         {/* TopNavBar (Mobile only) */}
         <header className="lg:hidden fixed top-0 w-full z-50 flex justify-between items-center px-margin py-xs max-w-container-max mx-auto bg-surface/10 backdrop-blur-xl border-b border-outline-variant/20 shadow-[0_0_30px_rgba(139,92,246,0.1)]">
           <div className="text-h3 font-h3 font-bold text-primary">HackMatch</div>
-          <div className="flex gap-sm">
-            <button className="text-primary hover:text-primary-container transition-colors duration-300 scale-95 active:scale-90">
+          <div className="flex gap-sm items-center">
+            <button className="text-primary hover:text-primary-container transition-colors duration-300 scale-95 active:scale-90" aria-label="Notifications">
               <span className="material-symbols-outlined">notifications</span>
             </button>
             <Link href="/messages" className="text-primary hover:text-primary-container transition-colors duration-300 scale-95 active:scale-90">
               <span className="material-symbols-outlined">forum</span>
             </Link>
-            <img alt="User profile photo" className="w-8 h-8 rounded-full border border-primary object-cover" src="https://images.unsplash.com/photo-1614289371518-722f2615943d?auto=format&fit=crop&q=80&w=100"/>
+            <Link href="/profile">
+              <div className="w-8 h-8 rounded-full bg-[#8b5cf6]/20 border border-[#8b5cf6]/30 flex items-center justify-center text-[#8b5cf6] font-bold text-sm overflow-hidden">
+                {session?.user?.image ? (
+                  <img src={session.user.image} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  userInitial
+                )}
+              </div>
+            </Link>
           </div>
         </header>
         
@@ -193,7 +216,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               transition={{ delay: 0.2 }}
               className="text-5xl md:text-7xl font-black text-white italic tracking-tighter mb-4"
             >
-              IT'S A MATCH!
+              IT&apos;S A MATCH!
             </motion.h2>
             
             <motion.p 

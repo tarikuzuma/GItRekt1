@@ -3,6 +3,7 @@
 import AppLayout from '../../components/AppLayout';
 import { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 
@@ -48,6 +49,7 @@ const INITIAL_CHATS: Chat[] = [
 function MessagesContent() {
   const searchParams = useSearchParams();
   const targetUser = searchParams.get('user');
+  const { data: session } = useSession();
   
   const [chats, setChats] = useState<Chat[]>(INITIAL_CHATS);
   const [allUsers, setAllUsers] = useState<any[]>([]);
@@ -58,16 +60,15 @@ function MessagesContent() {
   const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
   const [newGroupName, setNewGroupName] = useState('');
   const [newGroupDesc, setNewGroupDesc] = useState('');
-  const [currentUser, setCurrentUser] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Fetch current user from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem('hackmatch_user_profile');
-    if (stored) {
-      setCurrentUser(JSON.parse(stored));
-    }
-  }, []);
+  // Derive currentUser from NextAuth session
+  const currentUser = session?.user ? {
+    id: session.user.id,
+    name: session.user.name,
+    email: session.user.email,
+    image: session.user.image,
+  } : null;
 
   // Fetch all registered users
   useEffect(() => {

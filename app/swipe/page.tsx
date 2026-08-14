@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import AppLayout from '../../components/AppLayout';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const MOCK_PROFILES = [
@@ -310,24 +311,15 @@ const MOCK_PROFILES = [
 
 export default function SwipePage() {
   const router = useRouter();
-  const [profiles, setProfiles] = useState(MOCK_PROFILES);
+  const { data: session } = useSession();
+  const [profiles, setProfiles] = useState<Array<(typeof MOCK_PROFILES[0]) & { isReal?: boolean }>>(MOCK_PROFILES);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right' | null>(null);
 
-  const [currentUser, setCurrentUser] = useState<any>(null);
-
-  // Fetch current user from localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem('hackmatch_user_profile');
-    if (stored) {
-      setCurrentUser(JSON.parse(stored));
-    }
-  }, []);
-
   // Fetch real users from database and add to swipe pool
   useEffect(() => {
-    const email = currentUser?.email;
-    const url = email ? `/api/user/swipable?email=${email}` : '/api/user/swipable';
+    const email = session?.user?.email;
+    const url = email ? `/api/user/swipable?email=${encodeURIComponent(email)}` : '/api/user/swipable';
     
     fetch(url)
       .then(res => res.json())
@@ -354,7 +346,7 @@ export default function SwipePage() {
         }
       })
       .catch(err => console.error('Failed to load real users:', err));
-  }, [currentUser]);
+  }, [session?.user?.email]);
 
   const currentProfile = profiles[currentIndex % profiles.length];
 
@@ -362,12 +354,12 @@ export default function SwipePage() {
     setDirection(dir);
     
     // Call Swipe API if we have a current user and target
-    if (currentUser?.email && currentProfile.isReal) {
+    if (session?.user?.email && currentProfile.isReal) {
       try {
         const res = await fetch('/api/swipe', {
           method: 'POST',
           body: JSON.stringify({
-            actorEmail: currentUser.email,
+            actorEmail: session.user.email,
             targetUserId: currentProfile.id,
             direction: dir === 'right' ? 'LIKE' : 'PASS',
             targetType: 'USER'
@@ -407,7 +399,7 @@ export default function SwipePage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, currentProfile, currentUser]);
+  }, [currentIndex, currentProfile, session?.user?.email]);
 
   return (
     <AppLayout>

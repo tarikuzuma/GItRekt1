@@ -3,11 +3,12 @@
 import AppLayout from '../../components/AppLayout';
 import ResumeCard from '../../components/ResumeCard';
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProfilePage() {
+  const { data: session } = useSession();
   const [isEditing, setIsEditing] = useState(false);
-  const [email, setEmail] = useState('');
   const [profile, setProfile] = useState({
     name: '',
     role: '',
@@ -26,60 +27,50 @@ export default function ProfilePage() {
     idealTeam: [] as { role: string; desc: string; }[]
   });
 
-  // Load onboarding/sign-up data if it exists
+  // Load profile from database using the session email
   useEffect(() => {
-    const savedProfile = localStorage.getItem('hackmatch_user_profile');
-    if (savedProfile) {
-      const data = JSON.parse(savedProfile);
-      setProfile(prev => ({
-        ...prev,
-        name: data.name || prev.name,
-        school: data.university || data.school || prev.school,
-        role: data.role || prev.role,
-        skills: (data.skills && data.skills.length > 0) ? data.skills : prev.skills,
-        vibe: data.vibe || prev.vibe,
-        bio: data.isFirstTime ? `First-time hacker from ${data.university || 'university'} ready to learn and build! Interested in ${data.interests?.join(', ') || 'tech'}. Preferred vibe: ${data.vibe || 'Collaborative'}.` : (data.bio || prev.bio)
-      }));
+    const email = session?.user?.email;
+    if (!email) return;
 
-      if (data.email) setEmail(data.email.toLowerCase());
-
-      // Cloud Sync Check
-      if (data.email) {
-        fetch(`/api/user/profile?email=${data.email.toLowerCase()}`)
-          .then(res => res.json())
-          .then(cloudData => {
-            if (cloudData && cloudData.name) {
-              setProfile(prev => ({ ...prev, ...cloudData }));
-            }
-          })
-          .catch(err => console.error('Cloud sync failed:', err));
-      }
-    }
-  }, []);
+    fetch(`/api/user/profile?email=${encodeURIComponent(email.toLowerCase())}`)
+      .then(res => res.json())
+      .then(cloudData => {
+        if (cloudData && (cloudData.name || cloudData.email)) {
+          setProfile(prev => ({
+            ...prev,
+            name: cloudData.name || session.user?.name || prev.name,
+            school: cloudData.university || cloudData.school || prev.school,
+            role: cloudData.role || prev.role,
+            skills: (cloudData.skills && cloudData.skills.length > 0) ? cloudData.skills : prev.skills,
+            bio: cloudData.bio || prev.bio,
+          }));
+        } else {
+          // Fallback: seed from session data
+          setProfile(prev => ({
+            ...prev,
+            name: session.user?.name || prev.name,
+            image: session.user?.image || prev.image,
+          }));
+        }
+      })
+      .catch(err => console.error('Profile load failed:', err));
+  }, [session?.user?.email]);
 
   const [newSkill, setNewSkill] = useState('');
 
   const handleSave = async () => {
     setIsEditing(false);
     
-    // Save to localStorage
-    const savedProfile = localStorage.getItem('hackmatch_user_profile');
-    if (savedProfile) {
-      const data = JSON.parse(savedProfile);
-      const updatedProfile = { ...data, ...profile };
-      localStorage.setItem('hackmatch_user_profile', JSON.stringify(updatedProfile));
-
-      // Sync to cloud
-      if (updatedProfile.email) {
-        try {
-          await fetch('/api/user/profile', {
-            method: 'POST',
-            body: JSON.stringify(updatedProfile),
-            headers: { 'Content-Type': 'application/json' }
-          });
-        } catch (e) {
-          console.error('Profile cloud sync failed');
-        }
+    const email = session?.user?.email;
+    if (email) {
+      try {
+        await fetch('/api/user/profile', {
+          method: 'POST',
+          body: JSON.stringify({ email, ...profile }),
+          headers: { 'Content-Type': 'application/json' }
+        });
+      } catch (e) {
+        console.error('Profile cloud sync failed');
       }
     }
   };
@@ -97,28 +88,12 @@ export default function ProfilePage() {
   };
 
   // Merge resume-extracted tags into the tech stack, skipping ones already
-  // there (case-insensitively) and persisting right away so they survive a
-  // reload without the user having to hit Save.
+  // there (case-insensitively) and persisting right away so they survive a reload.
   const addSkillsFromResume = (labels: string[]) => {
     setProfile(prev => {
       const existing = new Set(prev.skills.map(s => s.toLowerCase()));
       const merged = [...prev.skills, ...labels.filter(l => !existing.has(l.toLowerCase()))];
-      const updated = { ...prev, skills: merged };
-
-      const saved = localStorage.getItem('hackmatch_user_profile');
-      if (saved) {
-        try {
-          const data = JSON.parse(saved);
-          localStorage.setItem(
-            'hackmatch_user_profile',
-            JSON.stringify({ ...data, skills: merged })
-          );
-        } catch {
-          /* Corrupt cache — the in-memory profile is still correct. */
-        }
-      }
-
-      return updated;
+      return { ...prev, skills: merged };
     });
   };
 
@@ -405,7 +380,7 @@ export default function ProfilePage() {
             </section>
 
             <ResumeCard
-              email={email}
+              email={session?.user?.email || ''}
               currentSkills={profile.skills}
               onAddSkills={addSkillsFromResume}
             />

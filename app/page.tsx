@@ -1,69 +1,125 @@
 'use client';
 
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+
+// Client-side password strength validation (mirrors lib/password.ts requirements)
+function validatePasswordClient(password: string): string | null {
+  if (password.length < 8) return 'Password must be at least 8 characters long';
+  if (!/[a-zA-Z]/.test(password)) return 'Password must contain at least one letter';
+  if (!/[0-9]/.test(password)) return 'Password must contain at least one number';
+  if (!/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)) return 'Password must contain at least one special character (!@#$%^&* etc.)';
+  return null;
+}
+
+// Password strength indicator
+function getPasswordStrength(password: string): 'weak' | 'medium' | 'strong' {
+  if (!password) return 'weak';
+  const hasRequirements = validatePasswordClient(password) === null;
+  if (hasRequirements && password.length >= 12) return 'strong';
+  if (hasRequirements) return 'medium';
+  return 'weak';
+}
 
 export default function WelcomePage() {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [university, setUniversity] = useState('');
   const [course, setCourse] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Real-time password strength hint for signup
+  const passwordError = !isLogin && password ? validatePasswordClient(password) : null;
+  const passwordStrength = !isLogin && password ? getPasswordStrength(password) : 'weak';
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!isLogin) {
+      // Client-side validation before hitting the server
+      const strengthError = validatePasswordClient(password);
+      if (strengthError) {
+        setError(strengthError);
+        return;
+      }
+    }
+
     setIsLoading(true);
 
-    // Simulate database check delay
-    setTimeout(async () => {
-      try {
-        if (isLogin) {
-          // LOGIN LOGIC: Check if user exists in database
-          const res = await fetch(`/api/user/profile?email=${email.toLowerCase()}`);
-          const data = await res.json();
-          
-          if (data && data.email) {
-            localStorage.setItem('hackmatch_user_profile', JSON.stringify(data));
-            router.push('/dashboard');
-          } else {
-            setError('Account not found. Mangyaring mag-Sign Up muna! 🇵🇭');
-            setIsLoading(false);
-          }
-        } else {
-          // SIGNUP LOGIC
-          const newProfile = {
-            name: fullName,
-            university: university,
-            course: course,
-            email: email.toLowerCase(),
-            interests: [],
-            skills: [],
-            role: '',
-            isFirstTime: true
-          };
-          
-          localStorage.setItem('hackmatch_user_profile', JSON.stringify(newProfile));
-          
-          // Sync to cloud immediately so friends can search for them
-          await fetch('/api/user/profile', {
-            method: 'POST',
-            body: JSON.stringify(newProfile),
-            headers: { 'Content-Type': 'application/json' }
-          });
+    try {
+      if (isLogin) {
+        // Use NextAuth credentials sign-in
+        const result = await signIn('credentials', {
+          redirect: false,
+          email: email.toLowerCase().trim(),
+          password,
+          rememberMe: rememberMe.toString(),
+        });
 
-          router.push('/onboarding');
+        if (result?.error) {
+          // Always show a generic error for security
+          setError('Invalid email or password');
+          setIsLoading(false);
+          return;
         }
-      } catch (err) {
-        console.error('Auth error:', err);
-        setError('Network error. Subukan uli mamaya.');
-        setIsLoading(false);
+
+        if (result?.ok) {
+          router.push('/dashboard');
+          router.refresh();
+        }
+      } else {
+        // SIGNUP: call our dedicated signup API
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: email.toLowerCase().trim(),
+            password,
+            name: fullName.trim(),
+            university: university.trim(),
+            course: course.trim(),
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          setError(data.error || 'Signup failed. Please try again.');
+          setIsLoading(false);
+          return;
+        }
+
+        // Auto-sign-in after successful registration
+        const signInResult = await signIn('credentials', {
+          redirect: false,
+          email: email.toLowerCase().trim(),
+          password,
+          rememberMe: 'false',
+        });
+
+        if (signInResult?.ok) {
+          router.push('/onboarding');
+          router.refresh();
+        } else {
+          setError('Account created! Please log in.');
+          setIsLogin(true);
+          setPassword('');
+          setIsLoading(false);
+        }
       }
-    }, 1500);
+    } catch (err) {
+      console.error('Auth error:', err);
+      setError('Network error. Please try again.');
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -88,14 +144,17 @@ export default function WelcomePage() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
-                <div className="bg-error/10 border border-error/20 text-error text-[13px] py-3 px-4 rounded-xl animate-pulse flex items-center gap-2">
+                <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-[13px] py-3 px-4 rounded-xl flex items-center gap-2">
                   <span className="material-symbols-outlined text-[18px]">error</span>
                   {error}
                 </div>
               )}
 
+              {/* Email */}
               <div className="space-y-2">
-                <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Email Address</label>
+                <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">
+                  Email Address
+                </label>
                 <input 
                   className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
                   placeholder="name@university.edu.ph" 
@@ -103,34 +162,79 @@ export default function WelcomePage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  autoComplete="email"
                 />
               </div>
 
+              {/* Password */}
               <div className="space-y-2">
-                <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Password</label>
+                <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">
+                  Password
+                </label>
                 <div className="relative">
                   <input 
                     className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10 pr-12" 
-                    placeholder="Enter your password" 
+                    placeholder={isLogin ? 'Enter your password' : 'Min 8 chars, letters, numbers, special'}
                     type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
+                    autoComplete={isLogin ? 'current-password' : 'new-password'}
                   />
                   <button 
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-[#8b5cf6] transition-colors"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     <span className="material-symbols-outlined text-[20px]">
                       {showPassword ? 'visibility_off' : 'visibility'}
                     </span>
                   </button>
                 </div>
+                {/* Real-time password strength hint during signup */}
+                {!isLogin && password && (
+                  <div className="space-y-2">
+                    {/* Strength indicator bar */}
+                    <div className="flex gap-1">
+                      <div className={`h-1 flex-1 rounded-full transition-all ${
+                        passwordStrength === 'weak' ? 'bg-red-500' :
+                        passwordStrength === 'medium' ? 'bg-amber-500' :
+                        'bg-green-500'
+                      }`}></div>
+                      <div className={`h-1 flex-1 rounded-full transition-all ${
+                        passwordStrength === 'medium' || passwordStrength === 'strong' ? 
+                        (passwordStrength === 'medium' ? 'bg-amber-500' : 'bg-green-500') :
+                        'bg-white/10'
+                      }`}></div>
+                      <div className={`h-1 flex-1 rounded-full transition-all ${
+                        passwordStrength === 'strong' ? 'bg-green-500' : 'bg-white/10'
+                      }`}></div>
+                    </div>
+                    
+                    {/* Error or success message */}
+                    {passwordError ? (
+                      <p className="text-[12px] text-amber-400 ml-1 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[14px]">info</span>
+                        {passwordError}
+                      </p>
+                    ) : (
+                      <p className="text-[12px] text-green-400 ml-1 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                        Password strength: <span className="font-bold capitalize">{passwordStrength}</span>
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
 
+              {/* Signup extra fields */}
               {!isLogin && (
                 <>
                   <div className="space-y-2">
-                    <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Full Name</label>
+                    <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">
+                      Full Name
+                    </label>
                     <input 
                       className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
                       placeholder="e.g. Juan Dela Cruz" 
@@ -138,34 +242,65 @@ export default function WelcomePage() {
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       required
+                      autoComplete="name"
                     />
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">University</label>
+                      <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">
+                        University
+                      </label>
                       <input 
                         className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
                         placeholder="UP Diliman" 
                         type="text"
                         value={university}
                         onChange={(e) => setUniversity(e.target.value)}
-                        required
+                        autoComplete="organization"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">Course</label>
+                      <label className="block text-[11px] font-bold text-[#94a3b8] uppercase tracking-[0.15em] ml-1">
+                        Course
+                      </label>
                       <input 
                         className="w-full bg-black/40 border border-white/[0.05] rounded-xl px-5 py-4 text-white font-body-sm focus:border-[#8b5cf6]/40 focus:bg-black/60 outline-none transition-all placeholder:text-white/10" 
                         placeholder="BS CS" 
                         type="text"
                         value={course}
                         onChange={(e) => setCourse(e.target.value)}
-                        required
                       />
                     </div>
                   </div>
                 </>
+              )}
+
+              {/* Remember Me (login only) */}
+              {isLogin && (
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    role="checkbox"
+                    aria-checked={rememberMe}
+                    onClick={() => setRememberMe(!rememberMe)}
+                    className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                      rememberMe 
+                        ? 'bg-[#8b5cf6] border-[#8b5cf6]' 
+                        : 'border-white/20 bg-black/40 hover:border-[#8b5cf6]/50'
+                    }`}
+                  >
+                    {rememberMe && (
+                      <span className="material-symbols-outlined text-white text-[14px]">check</span>
+                    )}
+                  </button>
+                  <label 
+                    className="text-[13px] text-[#94a3b8] cursor-pointer select-none"
+                    onClick={() => setRememberMe(!rememberMe)}
+                  >
+                    Remember me for 30 days
+                  </label>
+                </div>
               )}
 
               <button 
@@ -176,7 +311,7 @@ export default function WelcomePage() {
                 {isLoading ? (
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Checking...
+                    {isLogin ? 'Signing in...' : 'Creating account...'}
                   </div>
                 ) : (
                   isLogin ? 'Login' : 'Create Account'
@@ -191,6 +326,7 @@ export default function WelcomePage() {
                     onClick={() => {
                       setIsLogin(!isLogin);
                       setError('');
+                      setPassword('');
                     }}
                     className="ml-2 text-[#8b5cf6] font-bold hover:underline transition-all"
                   >
@@ -198,8 +334,6 @@ export default function WelcomePage() {
                   </button>
                 </p>
               </div>
-
-
             </form>
           </div>
         </div>

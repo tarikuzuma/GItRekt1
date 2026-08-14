@@ -2,10 +2,12 @@
 
 import AppLayout from '../../components/AppLayout';
 import { useState, useEffect } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [profile, setProfile] = useState({
     name: '',
     role: '',
@@ -17,54 +19,58 @@ export default function SettingsPage() {
 
   const [activeTab, setActiveTab] = useState('profile');
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
-  // Load user data from localStorage
+  // Load profile from database using session email
   useEffect(() => {
-    const saved = localStorage.getItem('hackmatch_user_profile');
-    if (saved) {
-      const data = JSON.parse(saved);
-      const initialBio = data.isFirstTime ? `First-time hacker from ${data.university || 'university'} ready to learn and build!` : (data.bio || '');
-      
-      setProfile({
-        name: data.name || '',
-        role: data.role || 'New Hacker',
-        bio: initialBio,
-        image: data.image || '',
-        university: data.university || '',
-        course: data.course || ''
-      });
-    }
-  }, []);
+    const email = session?.user?.email;
+    if (!email) return;
+
+    fetch(`/api/user/profile?email=${encodeURIComponent(email.toLowerCase())}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && (data.name || data.email)) {
+          setProfile({
+            name: data.name || session.user?.name || '',
+            role: data.role || '',
+            bio: data.bio || '',
+            image: data.image || session.user?.image || '',
+            university: data.university || '',
+            course: data.course || '',
+          });
+        } else {
+          // Seed from session if no DB record yet
+          setProfile(prev => ({
+            ...prev,
+            name: session.user?.name || '',
+            image: session.user?.image || '',
+          }));
+        }
+      })
+      .catch(err => console.error('Settings load failed:', err));
+  }, [session?.user?.email]);
 
   const handleSave = async () => {
-    // 1. Load existing to prevent data loss
-    const existingRaw = localStorage.getItem('hackmatch_user_profile');
-    const existing = existingRaw ? JSON.parse(existingRaw) : {};
-    const updatedProfile = { ...existing, ...profile };
-    
-    // 2. Save locally for instant UI update
-    localStorage.setItem('hackmatch_user_profile', JSON.stringify(updatedProfile));
-    
-    // 3. Sync to database immediately
-    if (updatedProfile.email) {
-      try {
-        await fetch('/api/user/profile', {
-          method: 'POST',
-          body: JSON.stringify(updatedProfile),
-          headers: { 'Content-Type': 'application/json' }
-        });
-        alert('Profile synchronized with database! 🚀');
-      } catch (e) {
-        console.error('Database sync failed');
-        alert('Saved locally, but database sync failed. It will retry on logout.');
-      }
-    } else {
-      alert('Settings saved locally! 🚀');
+    const email = session?.user?.email;
+    if (!email) return;
+
+    setSaveStatus('saving');
+    try {
+      await fetch('/api/user/profile', {
+        method: 'POST',
+        body: JSON.stringify({ email, ...profile }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+    } catch (e) {
+      console.error('Database sync failed');
+      setSaveStatus('error');
     }
   };
 
-  const handleLogout = () => {
-    router.push('/');
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/' });
   };
 
   return (
@@ -199,9 +205,10 @@ export default function SettingsPage() {
               <div className="flex justify-end pt-6 border-t border-white/[0.05]">
                 <button 
                   onClick={handleSave}
-                  className="bg-primary text-on-primary font-bold px-8 py-3 rounded-xl hover:brightness-110 shadow-[0_4px_20px_rgba(139,92,246,0.3)] transition-all active:scale-95"
+                  disabled={saveStatus === 'saving'}
+                  className="bg-primary text-on-primary font-bold px-8 py-3 rounded-xl hover:brightness-110 shadow-[0_4px_20px_rgba(139,92,246,0.3)] transition-all active:scale-95 disabled:opacity-50"
                 >
-                  Save Changes
+                  {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? '✓ Saved!' : 'Save Changes'}
                 </button>
               </div>
             </div>

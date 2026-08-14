@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const STEPS = [
@@ -17,6 +18,7 @@ const SKILLS = ['React', 'Next.js', 'TypeScript', 'Node.js', 'Python', 'Solidity
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [currentStep, setCurrentStep] = useState(1);
   const [selections, setSelections] = useState({
     interests: [] as string[],
@@ -38,26 +40,16 @@ export default function OnboardingPage() {
   const nextStep = () => {
     if (currentStep < 4) setCurrentStep(currentStep + 1);
     else {
-      // Merge selections with existing profile (Name, University, etc.)
-      const savedProfile = localStorage.getItem('hackmatch_user_profile');
-      let finalProfile: any = selections;
-      
-      if (savedProfile) {
-        const existingData = JSON.parse(savedProfile);
-        finalProfile = {
-          ...existingData,
-          ...selections,
-          isFirstTime: false // Mark as completed
-        };
-      }
-
-      localStorage.setItem('hackmatch_user_profile', JSON.stringify(finalProfile));
-      
-      // Also sync to cloud immediately
-      if (finalProfile.email) {
+      // Sync onboarding selections to the database using the session email
+      const email = session?.user?.email;
+      if (email) {
         fetch('/api/user/profile', {
           method: 'POST',
-          body: JSON.stringify({ email: finalProfile.email, profile: finalProfile }),
+          body: JSON.stringify({
+            email,
+            skills: selections.skills,
+            interests: selections.interests,
+          }),
           headers: { 'Content-Type': 'application/json' }
         }).catch(err => console.error('Onboarding cloud sync failed:', err));
       }
