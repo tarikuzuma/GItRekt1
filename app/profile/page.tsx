@@ -1,11 +1,13 @@
 'use client';
 
 import AppLayout from '../../components/AppLayout';
+import ResumeCard from '../../components/ResumeCard';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
+  const [email, setEmail] = useState('');
   const [profile, setProfile] = useState({
     name: '',
     role: '',
@@ -38,6 +40,8 @@ export default function ProfilePage() {
         vibe: data.vibe || prev.vibe,
         bio: data.isFirstTime ? `First-time hacker from ${data.university || 'university'} ready to learn and build! Interested in ${data.interests?.join(', ') || 'tech'}. Preferred vibe: ${data.vibe || 'Collaborative'}.` : (data.bio || prev.bio)
       }));
+
+      if (data.email) setEmail(data.email.toLowerCase());
 
       // Cloud Sync Check
       if (data.email) {
@@ -90,6 +94,32 @@ export default function ProfilePage() {
 
   const removeSkill = (skillToRemove: string) => {
     setProfile({ ...profile, skills: profile.skills.filter(s => s !== skillToRemove) });
+  };
+
+  // Merge resume-extracted tags into the tech stack, skipping ones already
+  // there (case-insensitively) and persisting right away so they survive a
+  // reload without the user having to hit Save.
+  const addSkillsFromResume = (labels: string[]) => {
+    setProfile(prev => {
+      const existing = new Set(prev.skills.map(s => s.toLowerCase()));
+      const merged = [...prev.skills, ...labels.filter(l => !existing.has(l.toLowerCase()))];
+      const updated = { ...prev, skills: merged };
+
+      const saved = localStorage.getItem('hackmatch_user_profile');
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          localStorage.setItem(
+            'hackmatch_user_profile',
+            JSON.stringify({ ...data, skills: merged })
+          );
+        } catch {
+          /* Corrupt cache — the in-memory profile is still correct. */
+        }
+      }
+
+      return updated;
+    });
   };
 
   return (
@@ -373,6 +403,12 @@ export default function ProfilePage() {
                 </div>
               </div>
             </section>
+
+            <ResumeCard
+              email={email}
+              currentSkills={profile.skills}
+              onAddSkills={addSkillsFromResume}
+            />
           </div>
         </div>
       </div>

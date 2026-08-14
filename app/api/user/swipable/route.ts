@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { Swipe } from "@prisma/client";
+import { deserializeUser } from "@/lib/json-list";
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -9,10 +9,8 @@ export async function GET(request: Request) {
   try {
     // If no email provided, just return all users (fallback for MVP)
     if (!email) {
-      const allUsers = await prisma.user.findMany({
-        take: 20
-      });
-      return NextResponse.json(allUsers);
+      const allUsers = await prisma.user.findMany({ take: 20 });
+      return NextResponse.json(allUsers.map(deserializeUser));
     }
 
     const currentUser = await prisma.user.findUnique({
@@ -21,16 +19,14 @@ export async function GET(request: Request) {
     });
 
     if (!currentUser) {
-      const allUsers = await prisma.user.findMany({
-        take: 20
-      });
-      return NextResponse.json(allUsers);
+      const allUsers = await prisma.user.findMany({ take: 20 });
+      return NextResponse.json(allUsers.map(deserializeUser));
     }
 
     // Get IDs of users already swiped on
     const swipedUserIds = currentUser.swipes
-      .filter((s: Swipe) => s.targetUserId)
-      .map((s: Swipe) => s.targetUserId as string);
+      .filter((s) => s.targetUserId)
+      .map((s) => s.targetUserId as string);
 
     // Fetch users not in the swiped list and not the current user
     const swipableUsers = await prisma.user.findMany({
@@ -43,7 +39,7 @@ export async function GET(request: Request) {
       take: 20
     });
 
-    return NextResponse.json(swipableUsers);
+    return NextResponse.json(swipableUsers.map(deserializeUser));
   } catch (error) {
     console.error('Fetch swipable users error:', error);
     return NextResponse.json({ error: 'Failed to fetch swipable users' }, { status: 500 });
